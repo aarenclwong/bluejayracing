@@ -141,93 +141,87 @@ class Mahony:
         self.anglesComputed = True
 
         
-def updateIMU(self, gx, gy, gz, ax, ay, az):
+    def updateIMU(self, gx, gy, gz, ax, ay, az):
 
-    recipNorm = 0
-    halfvx = halfvy = halfvz = 0
-    halfex = halfey = halfez = 0
-    qa = qb = qc = 0
+        recipNorm = 0
+        halfvx = halfvy = halfvz = 0
+        halfex = halfey = halfez = 0
+        qa = qb = qc = 0
 
-    gx *= 0.0174533
-    gy *= 0.0174533
-    gz *= 0.0174533
+        gx *= 0.0174533
+        gy *= 0.0174533
+        gz *= 0.0174533
 
-    if (ax == 0.0) or (ay == 0.0) or (az == 0.0):
-        # Normalise accelerometer measurement
-        recipNorm = invSqrt(ax * ax + ay * ay + az * az)
-        ax *= recipNorm
-        ay *= recipNorm
-        az *= recipNorm
+        if (ax == 0.0) or (ay == 0.0) or (az == 0.0):
+            # Normalise accelerometer measurement
+            recipNorm = self.invSqrt(ax * ax + ay * ay + az * az)
+            ax *= recipNorm
+            ay *= recipNorm
+            az *= recipNorm
+            
+            # Estimated direction of gravity
+            halfvx = self.q1 * self.q3 - self.q0 * self.q2
+            halfvy = self.q0 * self.q1 + self.q2 * self.q3
+            halfvz = self.q0 * self.q0 - 0.5 + self.q3 * self.q3
+
+            #Error is sum of cross product between estimated
+            # and measured direction of gravity
+            halfex = (ay * halfvz - az * halfvy)
+            halfey = (az * halfvx - ax * halfvz)
+            halfez = (ax * halfvy - ay * halfvx)
+
+            # Compute and apply integral feedback if enabled
+            if(self.twoKi > 0.0):
+                # integral error scaled by Ki
+                integralFBx += self.twoKi * halfex * self.invSampleFreq
+                integralFBy += self.twoKi * halfey * self.invSampleFreq
+                integralFBz += self.twoKi * halfez * self.invSampleFreq
+                gx += integralFBx	# apply integral feedback
+                gy += integralFBy
+                gz += integralFBz
+            else:
+                integralFBx = 0.0 # prevent integral windup
+                integralFBy = 0.0
+                integralFBz = 0.0
+            
+            # Apply proportional feedback
+            gx += self.twoKp * halfex
+            gy += self.twoKp * halfey
+            gz += self.twoKp * halfez
         
-        # Estimated direction of gravity
-        halfvx = self.q1 * self.q3 - self.q0 * self.q2
-        halfvy = self.q0 * self.q1 + self.q2 * self.q3
-        halfvz = self.q0 * self.q0 - 0.5 + self.q3 * self.q3
+        gx *= (0.5 * self.invSampleFreq) # pre-multiply common factors
+        gy *= (0.5 * self.invSampleFreq)
+        gz *= (0.5 * self.invSampleFreq)
+        qa = self.q0
+        qb = self.q1
+        qc = self.q2
+        self.q0 += (-qb * gx - qc * gy - self.q3 * gz)
+        self.q1 += (qa * gx + qc * gz - self.q3 * gy)
+        self.q2 += (qa * gy - qb * gz + self.q3 * gx)
+        self.q3 += (qa * gz + qb * gy - qc * gx)
 
-        #Error is sum of cross product between estimated
-		# and measured direction of gravity
-        halfex = (ay * halfvz - az * halfvy)
-        halfey = (az * halfvx - ax * halfvz)
-        halfez = (ax * halfvy - ay * halfvx)
+        recipNorm = self.invSqrt(self.q0 * self.q0 + self.q1 * self.q1 + self.q2 * self.q2 + self.q3 * self.q3)
+        self.q0 *= recipNorm
+        self.q1 *= recipNorm
+        self.q2 *= recipNorm
+        self.q3 *= recipNorm
+        self.anglesComputed = 0
 
-        # Compute and apply integral feedback if enabled
-        if(self.twoKi > 0.0):
-            # integral error scaled by Ki
-            integralFBx += self.twoKi * halfex * self.invSampleFreq
-            integralFBy += self.twoKi * halfey * self.invSampleFreq
-            integralFBz += self.twoKi * halfez * self.invSampleFreq
-            gx += integralFBx	# apply integral feedback
-            gy += integralFBy
-            gz += integralFBz
-        else:
-            integralFBx = 0.0 # prevent integral windup
-            integralFBy = 0.0
-            integralFBz = 0.0
-        
-        # Apply proportional feedback
-        gx += self.twoKp * halfex
-        gy += self.twoKp * halfey
-        gz += self.twoKp * halfez
-	
-    gx *= (0.5 * self.invSampleFreq) # pre-multiply common factors
-    gy *= (0.5 * self.invSampleFreq)
-    gz *= (0.5 * self.invSampleFreq)
-    qa = self.q0
-    qb = self.q1
-    qc = self.q2
-    self.q0 += (-qb * gx - qc * gy - self.q3 * gz)
-    self.q1 += (qa * gx + qc * gz - self.q3 * gy)
-    self.q2 += (qa * gy - qb * gz + self.q3 * gx)
-    self.q3 += (qa * gz + qb * gy - qc * gx)
-
-    recipNorm = invSqrt(self.q0 * self.q0 + self.q1 * self.q1 + self.q2 * self.q2 + self.q3 * self.q3)
-    self.q0 *= recipNorm
-    self.q1 *= recipNorm
-    self.q2 *= recipNorm
-    self.q3 *= recipNorm
-    self.anglesComputed = 0
-
-        
-        
-def invSqrt(self, x):
-    threehalfs = 1.5
-    x2 = x * 0.5
-    y = np.float32(x)
-    i = y.view(np.int32)
-    i = np.int32(0x5f3759df) - np.int32(i >> 1)
-    y = i.view(np.float32)
-    y = y * (threehalfs - (x2 * y * y))
-    return y
+            
+            
+    def invSqrt(self, x):
+        threehalfs = 1.5
+        x2 = x * 0.5
+        y = np.float32(x)
+        i = y.view(np.int32)
+        i = np.int32(0x5f3759df) - np.int32(i >> 1)
+        y = i.view(np.float32)
+        y = y * (threehalfs - (x2 * y * y))
+        return y
 
 
-def computeAngles(self):
-	self.roll = math.atan2(self.q0*self.q1 + self.q2*self.q3, 0.5 - self.q1*self.q1 - self.q2*self.q2)
-	self.pitch = math.asin(-2.0 * (self.q1*self.q3 - self.q0*self.q2))
-	self.yaw = math.atan2(self.q1*self.q2 + self.q0*self.q3, 0.5 - self.q2*self.q2 - self.q3*self.q3)
-	self.anglesComputed = 1
-    
-
-
-
-
-        
+    def computeAngles(self):
+        self.roll = math.atan2(self.q0*self.q1 + self.q2*self.q3, 0.5 - self.q1*self.q1 - self.q2*self.q2)
+        self.pitch = math.asin(-2.0 * (self.q1*self.q3 - self.q0*self.q2))
+        self.yaw = math.atan2(self.q1*self.q2 + self.q0*self.q3, 0.5 - self.q2*self.q2 - self.q3*self.q3)
+        self.anglesComputed = 1
