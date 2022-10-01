@@ -154,7 +154,7 @@ class Mahony:
 
         if (ax == 0.0) or (ay == 0.0) or (az == 0.0):
             # Normalise accelerometer measurement
-            recipNorm = self.invSqrt(ax * ax + ay * ay + az * az)
+            recipNorm = 1/math.sqrt(ax * ax + ay * ay + az * az)
             ax *= recipNorm
             ay *= recipNorm
             az *= recipNorm
@@ -200,7 +200,7 @@ class Mahony:
         self.q2 += (qa * gy - qb * gz + self.q3 * gx)
         self.q3 += (qa * gz + qb * gy - qc * gx)
 
-        recipNorm = self.invSqrt(self.q0 * self.q0 + self.q1 * self.q1 + self.q2 * self.q2 + self.q3 * self.q3)
+        recipNorm = 1/math.sqrt(self.q0 * self.q0 + self.q1 * self.q1 + self.q2 * self.q2 + self.q3 * self.q3)
         self.q0 *= recipNorm
         self.q1 *= recipNorm
         self.q2 *= recipNorm

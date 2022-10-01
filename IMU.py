@@ -10,6 +10,7 @@ class IMU:
         self.gyro = adafruit_fxas21002c.FXAS21002C(self.i2c)
         self.sensor = adafruit_fxos8700.FXOS8700(self.i2c)
         self.mahony = Mahony(sample_freq)
+        self.calibrate()
 
     def calibrate(self):
         ax_avg = 0
