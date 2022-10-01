@@ -221,7 +221,7 @@ def invSqrt(self, x):
 
 
 def computeAngles(self):
-	self.roll = math.atan2(self.q0*self.q1 + self.q2*self.q3, 0.5 - self.q1*self.q1 - self.q2*sefl.q2)
+	self.roll = math.atan2(self.q0*self.q1 + self.q2*self.q3, 0.5 - self.q1*self.q1 - self.q2*self.q2)
 	self.pitch = math.asin(-2.0 * (self.q1*self.q3 - self.q0*self.q2))
 	self.yaw = math.atan2(self.q1*self.q2 + self.q0*self.q3, 0.5 - self.q2*self.q2 - self.q3*self.q3)
 	self.anglesComputed = 1
