@@ -7,7 +7,7 @@ twoKpDef = 2.0 * 0.5        # 2 * proportional gain
 twoKiDef = 2.0 * 0.0        # 2 * integral gain
 
 class Mahony:
-    def __init__(self):
+    def __init__(self, sample_freq=DEFAULT_SAMPLE_FREQ):
         self.twoKp = twoKpDef
         self.twoKi = twoKiDef
         self.q0 = 1.0
@@ -18,7 +18,7 @@ class Mahony:
         self.integralFBx = 0.0
         self.integralBz = 0.0
         self.anglesComputed = False
-        self.invSampleFreq = 1.0/DEFAULT_SAMPLE_FREQ
+        self.invSampleFreq = 1.0/sample_freq
         
         self.roll = 0
         self.pitch = 0
