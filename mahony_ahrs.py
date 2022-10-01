@@ -138,7 +138,7 @@ class Mahony:
         self.q1 *= recipNorm
         self.q2 *= recipNorm
         self.q3 *= recipNorm
-        self.anglesComputed = True
+        self.anglesComputed = False
 
         
     def updateIMU(self, gx, gy, gz, ax, ay, az):
@@ -205,9 +205,8 @@ class Mahony:
         self.q1 *= recipNorm
         self.q2 *= recipNorm
         self.q3 *= recipNorm
-        self.anglesComputed = 0
+        self.anglesComputed = False
 
-            
             
     def invSqrt(self, x):
         threehalfs = 1.5
@@ -224,4 +223,4 @@ class Mahony:
         self.roll = math.atan2(self.q0*self.q1 + self.q2*self.q3, 0.5 - self.q1*self.q1 - self.q2*self.q2)
         self.pitch = math.asin(-2.0 * (self.q1*self.q3 - self.q0*self.q2))
         self.yaw = math.atan2(self.q1*self.q2 + self.q0*self.q3, 0.5 - self.q2*self.q2 - self.q3*self.q3)
-        self.anglesComputed = 1
+        self.anglesComputed = True
