@@ -15,6 +15,10 @@ while True:
     #accel_x, accel_y, accel_z = sensor.accelerometer
     #gyro_x, gyro_y, gyro_z = gyro.gyroscope
     mag_x, mag_y, mag_z = sensor.magnetometer
+    # this is the calibration obtained from calibration.py
+    mag_x += 30.6
+    mag_y += 11.25
+    mag_z += 80.8
     #print(f"Acceleration (m/s^2): ({accel_x}, {accel_y}, {accel_z})")
     #print(f"Gyroscope (rad/sec): ({gyro_x}, {gyro_y}, {gyro_z})")
     #print(f"Magnetometer (uTesla): ({mag_x}, {mag_y}, {mag_z})")
