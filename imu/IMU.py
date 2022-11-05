@@ -5,7 +5,7 @@ import adafruit_fxas21002c # Gyro
 import time
 
 class IMU:
-    def __init__(self, sample_freq=DEFAULT_SAMPLE_FREQ):
+    def __init__(self, sample_freq=DEFAULT_SAMPLE_FREQ, hi_xoff=0, hi_yoff=0, hi_z0ff=0):
         self.i2c = board.I2C()
         self.gyro = adafruit_fxas21002c.FXAS21002C(self.i2c)
         self.sensor = adafruit_fxos8700.FXOS8700(self.i2c)
@@ -44,9 +44,8 @@ class IMU:
         # adjust according to calibrate data
         return gx - self.gx_offset, gy - self.gy_offset, gz - self.gz_offset, \
             ax - self.ax_offset, ay - self.ay_offset, az-self.az_offset, \
-            mx, my, mz
+            mx + hi_xoff, my + hi_yoff, mz + hi_zoff
              
-        
 
     def get_raw(self):
         ax, ay, az = self.sensor.accelerometer
