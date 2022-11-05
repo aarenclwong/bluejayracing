@@ -1,15 +1,18 @@
-from mahony_ahrs import Mahony, DEFAULT_SAMPLE_FREQ
+from .mahony_ahrs import Mahony, DEFAULT_SAMPLE_FREQ
 import board
 import adafruit_fxos8700 # accel and magnet
 import adafruit_fxas21002c # Gyro
 import time
 
 class IMU:
-    def __init__(self, sample_freq=DEFAULT_SAMPLE_FREQ, hi_xoff=0, hi_yoff=0, hi_z0ff=0):
+    def __init__(self, sample_freq=DEFAULT_SAMPLE_FREQ, hi_xoff=0, hi_yoff=0, hi_zoff=0):
         self.i2c = board.I2C()
         self.gyro = adafruit_fxas21002c.FXAS21002C(self.i2c)
         self.sensor = adafruit_fxos8700.FXOS8700(self.i2c)
         self.mahony = Mahony(sample_freq)
+        self.hi_xoff = hi_xoff
+        self.hi_yoff = hi_yoff
+        self.hi_zoff = hi_zoff
         self.calibrate()
 
     def calibrate(self):
@@ -44,7 +47,7 @@ class IMU:
         # adjust according to calibrate data
         return gx - self.gx_offset, gy - self.gy_offset, gz - self.gz_offset, \
             ax - self.ax_offset, ay - self.ay_offset, az-self.az_offset, \
-            mx + hi_xoff, my + hi_yoff, mz + hi_zoff
+            mx + self.hi_xoff, my + self.hi_yoff, mz + self.hi_zoff
              
 
     def get_raw(self):

@@ -28,15 +28,15 @@ class GPS:
     def get_lat(self):
         if not self.gps.has_fix:
             return "x"
-        return self.gps.latitude
+        return "{0:.6f}".format(self.gps.latitude)
 
     def get_long(self):
         if not self.gps.has_fix:
             return "x"
-        return self.gps.longtitude
+        return "{0:.6f}".format(self.gps.longtitude)
 
     def get_knots(self):
         if not self.gps.has_fix:
             return "x"
-        return self.gps.speed_knots
+        return "{}".format(self.gps.speed_knots)
     
