@@ -10,7 +10,7 @@ import adafruit_gps
 class GPS:
     def __init__(self):
         # pyserial library for uart access
-        self.uart = serial.Serial("/dev/ttyS0", baudrate=9600, timeout=50)
+        self.uart = serial.Serial("/dev/ttyS0", baudrate=9600, timeout=10)
 
         # create GPS module instance
         self.gps = adafruit_gps.GPS(self.uart, debug=False)
@@ -18,8 +18,8 @@ class GPS:
         # Turn on the basic GGA and RMC info (what you typically want)
         self.gps.send_command(b"PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
 
-        # Set update rate to once a second (5hz), the upper limit for the Adafruit Ultimate GPS module
-        self.gps.send_command(b"PMTK220,200")
+        # Set update rate to once a second (1hz), the upper limit for the Adafruit Ultimate GPS module
+        self.gps.send_command(b"PMTK220,1000")
 
     
     def update(self):
