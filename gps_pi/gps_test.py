@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
+# Hello
 # SPDX-License-Identifier: MIT
 
 # Simple GPS module demonstration.
