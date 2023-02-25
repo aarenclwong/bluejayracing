@@ -1,0 +1,9 @@
+#ifndef ISM330DHC_HPP
+#define ISM330DHC_HPP
+
+
+#define ISM330DHC_ADDRESS 0x6A
+#define ISM330DHC_ADDRESS2 0x6B
+
+
+#endif

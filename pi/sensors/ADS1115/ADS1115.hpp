@@ -1,0 +1,10 @@
+#ifndef ADS1115_HPP
+#define ADS1115_HPP
+
+#define ADS1115_ADDRESS1 0x48
+#define ADS1115_ADDRESS2 0x49
+#define ADS1115_ADDRESS3 0x4A
+#define ADS1115_ADDRESS4 0x4B
+
+
+#endif
