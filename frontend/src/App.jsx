@@ -7,8 +7,8 @@ function App() {
   return (
     <>
       <World></World>
-      {/* <Map position={[39.32845515755447, -76.62242889404298]}></Map> */}
-      {/* <PlaybackRateMenuButtonExmaple></PlaybackRateMenuButtonExmaple> */}
+      <Map position={[39.32845515755447, -76.62242889404298]}></Map>
+      <PlaybackRateMenuButtonExmaple></PlaybackRateMenuButtonExmaple>
     </>
   );
 }

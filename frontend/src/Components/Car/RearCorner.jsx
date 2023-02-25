@@ -7,19 +7,21 @@ function RearCorner (props) {
   const { scale, flip } = props;
   let mesh = useLoader(
     STLLoader,
-    '../models/rear_corner.STL'
+    './public/models/lowminpolyrear.STL'
   );
   let scale_new = JSON.parse(JSON.stringify(scale));
  
   let position = [];
+  let rotation = [];
   if (flip) {
-    position = [-0.19, -.14, .29];
+    position = [0, -0.025, .255];
     scale_new[0]*=-1
+    rotation = [-0.1, -Math.PI, 0.01];
   } else {
-    position = [0.19, -.14, .29];
+    position = [0, -0.025, .255];
+    rotation = [-0.1, -Math.PI, -0.01];
   }
 
-  const rotation = [-0.05, -Math.PI, 0];
 
   return debug && (
     <group>

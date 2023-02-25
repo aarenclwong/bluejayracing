@@ -45,7 +45,7 @@ export const useWheels = (width, height, front, radius) => {
 
   const propsFunc = () => ({
     collisionFilterGroup: 0,
-    mass: 1,
+    mass: 10,
     shapes: [
       {
         args: [wheelInfo.radius, wheelInfo.radius, 0.015, 16],

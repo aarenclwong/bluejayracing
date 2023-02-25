@@ -7,17 +7,17 @@ function FrontCorner (props) {
   const { scale, flip } = props;
   let mesh = useLoader(
     STLLoader,
-    '../models/front_corner.STL'
+    './public/models/lowminpolyfront.STL'
   );
   let scale_new = JSON.parse(JSON.stringify(scale));
  
   const rotation = [-0, -Math.PI, 0];
   let position = [];
   if (flip) {
-    position = [-0.21, -.12, .26];
+    position = [0, -0.03, -.1];
     scale_new[0]*=-1
   } else {
-    position = [0.21, -.12, .26];
+    position = [0, -0.03, -.1];
   }
 
   
