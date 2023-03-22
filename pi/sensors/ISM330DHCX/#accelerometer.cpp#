@@ -7,11 +7,11 @@ Accelerometer::Accelerometer():fd{-1}, adr{ISM330DHC_ADDRESS} {
   reset();
 }
 
-Accelerometer::Accelerometer(int fd): adr{ISM330DHC_ADDRESS} {
+Accelerometer::Accelerometer(int fd): fd{fd}, adr{ISM330DHC_ADDRESS} {
   reset();
 }
 
-Accelerometer::Accelerometer(int fd, location) {
+Accelerometer::Accelerometer(int fd, int location): fd{fd} {
   adr = (location == 0 ? ISM330DHC_ADDRESS : ISM330DHC_ADDRESS2);
   reset();
 }
@@ -27,7 +27,7 @@ Accelerometer::~Accelerometer() {
 void Accelerometer::reset() {
   /* TODO */
   //enable ?
-  i2c_write(fd, adr, 0x10, stoi("10100000", nullptr, 2));
+  i2c_write(fd, adr, 0x10, std::stoi("10100000", nullptr, 2));
   return;
 }
 

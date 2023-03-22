@@ -5,9 +5,9 @@
 
 class SensorInterface {
 public:
-void reset();
-std::vector<double> read();
-}
+    virtual void reset() = 0;
+    virtual std::vector<double> read() = 0;
+};
 
 
 #endif

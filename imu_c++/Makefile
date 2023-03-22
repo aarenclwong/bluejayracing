@@ -1,0 +1,15 @@
+CC=g++
+CFLAGS= -g -Wall
+
+# Links together files needed to create executable
+imu: imu.o
+	$(CC) $(CFLAGS) -o imu imu.o
+
+# Compiles imu_cpp.cpp to create imu_cpp.o
+imu.o: imu.cpp
+	$(CC) $(CFLAGS) -c imu.cpp
+
+# Removes all object files and the executable named main,
+# so we can start fresh
+clean:
+	rm -f *.o main

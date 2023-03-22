@@ -1,5 +1,5 @@
-#ifndef ADS1115_HPP
-#define ADS1115_HPP
+#ifndef ADC_HPP
+#define ADC_HPP
 
 #include "../../communication/i2c_dev.hpp"
 #include "../interfaces/sensor_interface.hpp"
@@ -11,9 +11,13 @@ public:
   ADC(int fd);
   ADC(int fd, int location);
   ~ADC();
+  
+  std::vector<double> read();
+  void reset();
+  
 private:
   int adr;
   int fd;
-}
+};
 
 #endif
