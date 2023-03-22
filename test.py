@@ -4,13 +4,17 @@
 import time
 import board
 import busio
-import adafruit_ads1x15.ads1115 as ADS
+# import Adafruit_ADS1x15 #functions
+import adafruit_ads1x15.ads1115 as ADS #objects
+
 from adafruit_ads1x15.ads1x15 import Mode
+# from adafruit_ads1x15.ads1x15 import ADS1x15
 from adafruit_ads1x15.analog_in import AnalogIn
 
 # Data collection setup
 RATE = 860
 SAMPLES = 10000
+GAIN = 1
 
 # Create the I2C bus with a fast frequency
 # NOTE: Your device may not respect the frequency setting
@@ -23,14 +27,13 @@ SAMPLES = 10000
 i2c = busio.I2C(board.SCL, board.SDA, frequency=400000)
 
 # Create the ADC object using the I2C bus
-ads1 = ADS.ADS1115(i2c, gain = 1,  data_rate = RATE, mode = Mode.CONTINUOUS, address = 0x49)
-ads2 = ADS.ADS1115(i2c, gain = 1,  data_rate = RATE, mode = Mode.CONTINUOUS, address = 0x48)
-ads3 = ADS.ADS1115(i2c, gain = 1,  data_rate = RATE, mode = Mode.CONTINUOUS, address = 0x4a)
-ads4 = ADS.ADS1115(i2c, gain = 1,  data_rate = RATE, mode = Mode.CONTINUOUS, address = 0x4b)
-
+ads1 = ADS.ADS1115(i2c, gain = GAIN, data_rate = RATE, mode = Mode.CONTINUOUS, address = 0x49)
+ads2 = ADS.ADS1115(i2c, gain = GAIN, data_rate = RATE, mode = Mode.CONTINUOUS, address = 0x48)
+ads3 = ADS.ADS1115(i2c, gain = GAIN, data_rate = RATE, mode = Mode.CONTINUOUS, address = 0x4a)
+ads4 = ADS.ADS1x15(i2c, gain = GAIN, data_rate = RATE, mode = Mode.CONTINUOUS, address = 0x4b)
 
 # Create single-ended input on channel 0
-adc0 = AnalogIn(ads1, ADS.P0)
+adc0 = AnalogIn(ads1)
 adc1 = AnalogIn(ads2, ADS.P0)
 adc2 = AnalogIn(ads3, ADS.P0)
 adc3 = AnalogIn(ads4, ADS.P0)
@@ -40,14 +43,14 @@ adc3 = AnalogIn(ads4, ADS.P0)
 # print(chan2.value, chan2.voltage)
 
 # ADC Configuration
-# ads1.mode = Mode.CONTINUOUS
-# ads1.data_rate = RATE
-# ads2.mode = Mode.CONTINUOUS
-# ads2.data_rate = RATE
-# ads3.mode = Mode.CONTINUOUS
-# ads3.data_rate = RATE
-# ads4.mode = Mode.CONTINUOUS
-# ads4.data_rate = RATE
+ads1.mode = Mode.CONTINUOUS
+ads1.data_rate = RATE
+ads2.mode = Mode.CONTINUOUS
+ads2.data_rate = RATE
+ads3.mode = Mode.CONTINUOUS
+ads3.data_rate = RATE
+ads4.mode = Mode.CONTINUOUS
+ads4.data_rate = RATE
 
 # First ADC channel read in continuous mode configures device
 # and waits 2 conversion cycles
@@ -82,7 +85,12 @@ for i in range(SAMPLES):
     data2[i] = adc1.value
     data3[i] = adc2.value
     data4[i] = adc3.value
-
+    # adc = Adafruit_ADS1x15.ADS1115()
+    # data1[i] = adc0.read_adc(1,gain=GAIN)
+    # data2[i] = ads1.read_adc(2, gain=GAIN)
+    # data3[i] = ads1.read_adc(3, gain=GAIN)
+    # data4[i] = ads1.read_adc(4, gain=GAIN)
+    
     # Loop timing
     time_last_sample = time.monotonic()
     time_next_sample = time_next_sample + sample_interval
@@ -96,7 +104,10 @@ for i in range(SAMPLES):
     # print(f"ADC0: {data1[i]}")
     if data2[i] == data2[i - 1]:
         repeats += 1
-    print(f"ADC1: {(data2[i]/bittommconversion)*.039} inches")
+    print(f"ADC1: {(data1[i]/bittommconversion)*.039} inches")
+    print(f"ADC2: {(data2[i]/bittommconversion)*.039} inches")
+    print(f"ADC3: {(data3[i]/bittommconversion)*.039} inches")
+    print(f"ADC4: {(data4[i]/bittommconversion)*.039} inches")
     #convert bits to inches
     #275 mm = 10.827 in 26392
 
