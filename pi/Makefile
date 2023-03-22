@@ -47,4 +47,4 @@ spi_pigpio.o: communication/spi_pigpio.hpp communication/spi_pigpio.cpp communic
 	$(CXX) -c communication/spi_pigpio.cpp $(CFLAGS) 
 
 clean:
-	rm -rf *.o *.gch *~ 
+	rm -rf *.o *.gch *out *~ accel_test gyro_test main adc_test spi_test 

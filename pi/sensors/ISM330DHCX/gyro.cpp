@@ -1,4 +1,5 @@
 #include "gyro.hpp"
+#include <iostream>
 
 using std::vector;
 

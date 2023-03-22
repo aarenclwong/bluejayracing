@@ -1,4 +1,5 @@
 #include "adc.hpp"
+#include <iostream>
 
 using std::vector;
 

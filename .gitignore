@@ -1,2 +1,5 @@
 data/
 frontend/models
+spi_test
+*.out
+*.o

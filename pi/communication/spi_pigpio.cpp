@@ -16,92 +16,92 @@ using std::endl;
 using std::uint8_t;
 
 
-uint8_t spi_read(int spi_handle, uint8_t reg) {
-  int status;
-  struct spi_ioc_transfer xfer;
+// uint8_t spi_read(int spi_handle, uint8_t reg) {
+//   int status;
+//   struct spi_ioc_transfer xfer;
 
-	memset(&xfer, 0, sizeof(xfer));
-  uint8_t	inbuf[1], outbuf[1];
+// 	memset(&xfer, 0, sizeof(xfer));
+//   uint8_t	inbuf[1], outbuf[1];
 
-	memset(&inbuf, 0, sizeof(inbuf));
-	memset(&outbuf, 0, sizeof(outbuf));
+// 	memset(&inbuf, 0, sizeof(inbuf));
+// 	memset(&outbuf, 0, sizeof(outbuf));
 
-	outbuf[0] = reg | 0x80;
+// 	outbuf[0] = reg | 0x80;
 
 
-	xfer.tx_buf = (unsigned long)outbuf;
-	xfer.rx_buf = (unsigned long)inbuf;
-	xfer.len = 1;
+// 	xfer.tx_buf = (unsigned long)outbuf;
+// 	xfer.rx_buf = (unsigned long)inbuf;
+// 	xfer.len = 1;
 
-	xfer.speed_hz = 1000000;
-	xfer.delay_usecs = 5;
-	xfer.bits_per_word = 8;
-	xfer.cs_change = 0;
-	status = ioctl(spi_handle, SPI_IOC_MESSAGE(1), &xfer);
-	if (status < 0) {
-	  perror("SPI_IOC_MESSAGE");
-	}
-	return inbuf[0];
-}
+// 	xfer.speed_hz = 1000000;
+// 	xfer.delay_usecs = 5;
+// 	xfer.bits_per_word = 8;
+// 	xfer.cs_change = 0;
+// 	status = ioctl(spi_handle, SPI_IOC_MESSAGE(1), &xfer);
+// 	if (status < 0) {
+// 	  perror("SPI_IOC_MESSAGE");
+// 	}
+// 	return inbuf[0];
+// }
 
-int spi_write(int spi_handle, uint8_t reg, uint8_t value) {
-  int status;
-  struct spi_ioc_transfer xfer;
-	memset(&xfer, 0, sizeof(xfer));
-  uint8_t	outbuf[3];
+// int spi_write(int spi_handle, uint8_t reg, uint8_t value) {
+//   int status;
+//   struct spi_ioc_transfer xfer;
+// 	memset(&xfer, 0, sizeof(xfer));
+//   uint8_t	outbuf[3];
 	
 
-	memset(&outbuf, 0, sizeof outbuf);
+// 	memset(&outbuf, 0, sizeof outbuf);
 
-	outbuf[0] = reg;
-	outbuf[1] = value;
-	xfer.tx_buf = (unsigned long)outbuf;
-	xfer.rx_buf = NULL;
-	xfer.len = 2;
+// 	outbuf[0] = reg;
+// 	outbuf[1] = value;
+// 	xfer.tx_buf = (unsigned long)outbuf;
+// 	xfer.rx_buf = NULL;
+// 	xfer.len = 2;
 
-	xfer.speed_hz = 1000000;
-	xfer.delay_usecs = 5;
-	xfer.bits_per_word = 8;
-	xfer.cs_change = 0;
+// 	xfer.speed_hz = 1000000;
+// 	xfer.delay_usecs = 5;
+// 	xfer.bits_per_word = 8;
+// 	xfer.cs_change = 0;
 
-	status = ioctl(spi_handle, SPI_IOC_MESSAGE(1), &xfer);
-	if (status < 0) {
-		perror("SPI_IOC_MESSAGE");
-	}
+// 	status = ioctl(spi_handle, SPI_IOC_MESSAGE(1), &xfer);
+// 	if (status < 0) {
+// 		perror("SPI_IOC_MESSAGE");
+// 	}
 
-  return 0;
+//   return 0;
+// }
+
+
+
+
+
+
+
+
+uint8_t spi_read(int spi_handle, unsigned char reg)
+{
+    char tx_buf[2];
+    char rx_buf[2];
+    tx_buf[0] = reg | 0x80;
+    tx_buf[1] = 0x00;
+    gpioWrite(8, 0);
+    spiXfer(spi_handle, tx_buf, rx_buf, 2);
+    gpioWrite(8, 1);
+    return (uint8_t)rx_buf[1];
 }
 
-
-
-
-
-
-
-
-// uint8_t spi_read(int spi_handle, unsigned char reg)
-// {
-//     char tx_buf[2];
-//     char rx_buf[2];
-//     tx_buf[0] = reg | 0x80;
-//     tx_buf[1] = 0x00;
-//     gpioWrite(8, 0);
-//     spiXfer(spi_handle, tx_buf, rx_buf, 2);
-//     gpioWrite(8, 1);
-//     return (uint8_t)rx_buf[1];
-// }
-
-// int spi_write(int spi_handle, unsigned char reg, unsigned char value)
-// {
-//     char tx_buf[2];
-//     char rx_buf[2];
-//     tx_buf[0] = reg & 0x7F;
-//     tx_buf[1] = value;
-//     gpioWrite(8, 0);
-//     cout << spiXfer(spi_handle, tx_buf, rx_buf, 1) << endl;
-//     gpioWrite(8, 1);
-//     return 0;
-// }
+int spi_write(int spi_handle, unsigned char reg, unsigned char value)
+{
+    char tx_buf[2];
+    char rx_buf[2];
+    tx_buf[0] = reg & 0x7F;
+    tx_buf[1] = value;
+    gpioWrite(8, 0);
+    cout << spiXfer(spi_handle, tx_buf, rx_buf, 1) << endl;
+    gpioWrite(8, 1);
+    return 0;
+}
 
 
 // uint8_t spi_read(spi_d sd, uint8_t reg) {
