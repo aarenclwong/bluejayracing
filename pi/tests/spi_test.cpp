@@ -53,11 +53,6 @@ char spiMSB = 0;
 //   }
 
 
-//   uint8_t	inbuf[1];
-//   // inbuf[1] = 0x00;
-//   // write(spi_handle, &inbuf, 1);
-//   // read(spi_handle,&inbuf, 1);
-//   // cout << bitset<8>(inbuf[0]) << endl;
 //   // spi_write(spi_handle, 0x10, std::stoi("11111000", nullptr, 2));
 
 //   for (int i = 0; i < 1; i++) {
@@ -82,7 +77,8 @@ int main(/*int argc, char* argv[]*/) {
     return 1;
   }
 
-  gpioSetPullUpDown(8, PI_PUD_OFF);
+  // gpioSetPullUpDown(8, PI_PUD_OFF);
+  // gpioWrite(7, 0);
 
 
   //Connect to pigpio daemon
@@ -108,7 +104,7 @@ int main(/*int argc, char* argv[]*/) {
   }
 
 
-  spi_write(/*spi_d(pi, spi_handle)*/spi_handle, 0x10, std::stoi("11111000", nullptr, 2));
+  //spi_write(/*spi_d(pi, spi_handle)*/spi_handle, 0x10, std::stoi("11111000", nullptr, 2));
   for (int i = 0; i < 10; i++) {
     cout << bitset<8>(spi_read(/*spi_d(pi, spi_handle)*/spi_handle, 0x0F)).to_string() << endl;
   }
@@ -116,7 +112,7 @@ int main(/*int argc, char* argv[]*/) {
 
   // Close the SPI device
   spiClose(/*pi,*/ spi_handle);
-  gpioWrite(8, 0);
+  //gpioWrite(8, 0);
 
   // Close connection to daemon
   // pigpio_stop(pi);
