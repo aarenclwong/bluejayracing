@@ -7,8 +7,6 @@ using std::vector;
 
 #include <iostream>
 
-
-
 using std::cout;
 using std::endl;
 
@@ -29,8 +27,6 @@ int spi_write(spi_d sd, uint8_t reg, uint8_t value) {
   spi_xfer(sd.pi, sd.spi_handle, tx_buf, rx_buf, 2);
   return 0;
 }
-
-#include <cstring>
 
 vector<uint8_t> spi_bulk_read(spi_d sd, uint8_t reg, int len) {
   char *tx_buf = (char*)calloc(len+1, sizeof(char));
