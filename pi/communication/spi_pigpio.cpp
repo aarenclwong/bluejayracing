@@ -33,10 +33,8 @@ int spi_write(spi_d sd, uint8_t reg, uint8_t value) {
 #include <cstring>
 
 vector<uint8_t> spi_bulk_read(spi_d sd, uint8_t reg, int len) {
-  char *tx_buf = (char*)malloc((len+1)*sizeof(char));
-  char *rx_buf = (char*)malloc((len+1)*sizeof(char));
-  memset(rx_buf, 0, sizeof(*rx_buf));
-  memset(tx_buf, 0, sizeof(*tx_buf));
+  char *tx_buf = (char*)calloc(len+1, sizeof(char));
+  char *rx_buf = (char*)calloc(len+1, sizeof(char));
   // char tx_buf[len];
   // char rx_buf[len];
   tx_buf[0] = reg | 0x80;
@@ -45,6 +43,8 @@ vector<uint8_t> spi_bulk_read(spi_d sd, uint8_t reg, int len) {
   for (int i = 0; i < len; i++) {
     ret.push_back(static_cast<uint8_t>(rx_buf[i+1]));
   }
+  free(tx_buf);
+  free(rx_buf);
   return ret;
 }
 

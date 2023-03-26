@@ -6,7 +6,7 @@ LINKING_FLAGS =
 CFLAGS = $(CONSERVATIVE_FLAGS) $(DEBUGGING_FLAGS) $(IGNORE_FLAGS)
 
 
-all: main accel_test adc_test gps_test gyro_test gps_test
+all: main accel_test adc_test gps_test gyro_test gps_test spi_test
 
 
 accel_test: tests/accel_test.cpp accelerometer.o i2c_dev.o
@@ -25,8 +25,8 @@ spi_test: tests/spi_test.cpp spi_pigpio.o
 	$(CXX) -pthread -o spi_test tests/spi_test.cpp spi_pigpio.o $(CFLAGS) -lpigpiod_if2 -lrt 
 
 
-main: accelerometer.o gyro.o adc.o gps.o i2c_dev.o
-	$(CXX) -o main main.cpp accelerometer.o gyro.o adc.o gps.o i2c_dev.o $(CFLAGS)	
+main: accelerometer.o gyro.o adc.o gps.o i2c_dev.o adafruit_ads.o
+	$(CXX) -o main main.cpp accelerometer.o gyro.o adc.o gps.o i2c_dev.o adafruit_ads.o $(CFLAGS)	
 
 accelerometer.o: sensors/ISM330DHCX/accelerometer.cpp sensors/ISM330DHCX/accelerometer.hpp sensors/ISM330DHCX/ISM330DHCX.hpp
 	$(CXX) -c sensors/ISM330DHCX/accelerometer.cpp $(CFLAGS)
@@ -41,7 +41,7 @@ gps.o: sensors/MTK3339/gps.cpp sensors/MTK3339/gps.hpp
 	$(CXX) -c sensors/MTK3339/gps.cpp $(CFLAGS)
 
 i2c_dev.o: communication/i2c_dev.hpp communication/i2c_dev.cpp
-	$(CXX) -c communication/i2c_dev.cpp $(CFLAGS)
+	$(CXX) -Wvla -c communication/i2c_dev.cpp $(CFLAGS) 
 
 spi_pigpio.o: communication/spi_pigpio.hpp communication/spi_pigpio.cpp communication/spi_d.hpp
 	$(CXX) -c communication/spi_pigpio.cpp $(CFLAGS)
