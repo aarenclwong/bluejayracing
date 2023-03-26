@@ -15,7 +15,7 @@ int main(/*int argc, char* argv[]*/) {
     char err[200];
     sprintf(err, "Failed to open i2c bus (%c) ", BUS_NAME);
   }
-  Accelerometer a = Accelerometer(fd, 0);
+  Accelerometer a = Accelerometer(fd, 1);
 
   vector<double> data = a.read();
   

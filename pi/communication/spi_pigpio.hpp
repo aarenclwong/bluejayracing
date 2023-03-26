@@ -7,9 +7,11 @@
 #include <linux/spi/spidev.h>
 
 
-int spi_write(/*spi_d sd*/int spi_handle, std::uint8_t reg, std::uint8_t data);
+int spi_write(spi_d sd, std::uint8_t reg, std::uint8_t data);
 
-std::uint8_t spi_read(/*spi_d sd*/int spi_handle, std::uint8_t reg);
+std::uint8_t spi_read(spi_d sd, std::uint8_t reg);
+
+std::vector<std::uint8_t> spi_bulk_read(spi_d sd, std::uint8_t reg, int len);
 
 
 #endif

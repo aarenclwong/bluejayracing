@@ -59,4 +59,6 @@ int i2c_read(int fd, std::uint8_t slave_addr, std::uint8_t reg, std::uint8_t* &r
 
 std::vector<std::uint8_t> i2c_bulk_read(int fd, std::uint8_t slave_addr, std::uint8_t reg, int len);
 
+int i2c_bulk_write(int fd, std::uint8_t slave_addr, std::uint8_t reg, std::vector<std::uint8_t> data, int len);
+
 #endif

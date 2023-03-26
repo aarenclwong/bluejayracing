@@ -15,14 +15,14 @@ accel_test: tests/accel_test.cpp accelerometer.o i2c_dev.o
 gyro_test: tests/gyro_test.cpp gyro.o i2c_dev.o
 	$(CXX) -o gyro_test tests/gyro_test.cpp gyro.o i2c_dev.o $(CFLAGS)
 
-adc_test: tests/adc_test.cpp adc.o i2c_dev.o
-	$(CXX) -o adc_test tests/adc_test.cpp adc.o i2c_dev.o $(CFLAGS)
+adc_test: tests/adc_test.cpp adc.o i2c_dev.o adafruit_ads.o
+	$(CXX) -o adc_test tests/adc_test.cpp adc.o i2c_dev.o adafruit_ads.o $(CFLAGS)
 
 gps_test: tests/gps_test.cpp gps.o i2c_dev.o
 	$(CXX) -o accel_test tests/gps_test.cpp gps.o i2c_dev.o $(CFLAGS)
 
 spi_test: tests/spi_test.cpp spi_pigpio.o
-	$(CXX) -pthread -o spi_test tests/spi_test.cpp spi_pigpio.o $(CFLAGS) -lpigpio -lrt 
+	$(CXX) -pthread -o spi_test tests/spi_test.cpp spi_pigpio.o $(CFLAGS) -lpigpiod_if2 -lrt 
 
 
 main: accelerometer.o gyro.o adc.o gps.o i2c_dev.o
@@ -44,7 +44,10 @@ i2c_dev.o: communication/i2c_dev.hpp communication/i2c_dev.cpp
 	$(CXX) -c communication/i2c_dev.cpp $(CFLAGS)
 
 spi_pigpio.o: communication/spi_pigpio.hpp communication/spi_pigpio.cpp communication/spi_d.hpp
-	$(CXX) -c communication/spi_pigpio.cpp $(CFLAGS) 
+	$(CXX) -c communication/spi_pigpio.cpp $(CFLAGS)
+
+adafruit_ads.o: sensors/ADS1115/adafruit_ads.hpp sensors/ADS1115/adafruit_ads.cpp
+	$(CXX) -c sensors/ADS1115/adafruit_ads.cpp $(CFLAGS)
 
 clean:
 	rm -rf *.o *.gch *out *~ accel_test gyro_test main adc_test spi_test 

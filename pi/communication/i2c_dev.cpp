@@ -2,6 +2,7 @@
 #include <iostream>
 
 using std::uint8_t;
+using std::vector;
 
 int i2c_write(int fd, uint8_t slave_addr, uint8_t reg, uint8_t data) {
   uint8_t outbuf[2];
@@ -51,7 +52,7 @@ int i2c_read(int fd, uint8_t slave_addr, uint8_t reg, uint8_t* &result) {
 }
 
 
-std::vector<uint8_t> i2c_bulk_read(int fd, uint8_t slave_addr, uint8_t reg, int len) {
+vector<uint8_t> i2c_bulk_read(int fd, uint8_t slave_addr, uint8_t reg, int len) {
   uint8_t outbuf[1];
   uint8_t inbuf[len];
   struct i2c_msg msgs[2];
@@ -75,4 +76,28 @@ std::vector<uint8_t> i2c_bulk_read(int fd, uint8_t slave_addr, uint8_t reg, int 
     ret.push_back(inbuf[i]);
   }
   return ret;
+}
+
+int i2c_bulk_write(int fd, uint8_t slave_addr, uint8_t reg, vector<uint8_t> data, int len) {
+  uint8_t outbuf[len+1];
+  outbuf[0] = reg;
+  for (int i = 0; i < len; i++) {
+    outbuf[i+1] = data[i];
+  }
+  
+  struct i2c_msg msgs[1];
+  struct i2c_rdwr_ioctl_data msgset[1];
+  msgs[0].addr = slave_addr;
+  msgs[0].flags = 0;
+  msgs[0].len = len+1;
+  msgs[0].buf = outbuf;
+
+  msgset[0].msgs = msgs;
+  msgset[0].nmsgs = 1;
+  
+
+  if (ioctl(fd, I2C_RDWR, &msgset) < 0) {
+    perror("ioctl(I2C_RDWR) in i2c_read");
+  }
+  return 0;
 }
