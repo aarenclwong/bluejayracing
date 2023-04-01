@@ -2,13 +2,14 @@ import matplotlib.pyplot as plt
 import re
 import numpy as np
 from sklearn import preprocessing
+from scipy.signal import find_peaks
 import os
 import time
 import pandas as pd
 
-fig, axs = plt.subplots(1)
-fig.suptitle('Sensing')
-# axs[0].set_title("Filtered Accel Data")
+fig, axs = plt.subplots(nrows=2)
+# fig.subtitle('Sensing')
+axs[0].set_title("Filtered Accel Data")
 
 # Parse data from file into array in python
 with open("temp.txt") as file:
@@ -18,20 +19,29 @@ with open("temp.txt") as file:
     pass
 
 # plot raw data
-plt.plot(range(len(array)), array)
-plt.show()
+axs[0].plot(range(len(array)), array)
 
 # normalize data so we can put it into numpy
 # data_vector = [] # vector with the parsed floats
 # data_vector = preprocessing.normalize(array.reshape(-1, 1))
+data_vector = np.array(array).reshape(-1, 1)
+data_vector = preprocessing.normalize(data_vector)
 
-# # for i in range(0, 100):
-# #     print(data_vector[i])
+# for i in range(0, 100):
+#     print(data_vector[i])
 
-# # reshape data vector to be a 2D array
-# # data_vector = data_vector.reshape(-1, 1)
-
-# # plot vectorized data
-# axs.plot(range(len(data_vector)), data_vector)
+# plot vectorized data
+# axs[1].plot(range(len(data_vector)), data_vector)
+# axs[1].set_title("Vectorized Data")
 # fig.canvas.draw()
-# plt.show()
+
+# Find local maxima in the normalized data
+peaks, _ = find_peaks(data_vector.ravel())
+
+# Plot the original data and the local maxima
+#ax.plot(array)
+axs[1].plot(peaks, array[peaks])
+axs[1].set_title("Local Maxima in Data")
+# axs[1].set_xlabel("Sample Number")
+axs[1].set_ylabel("Amplitude")
+plt.show()
