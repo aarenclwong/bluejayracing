@@ -5,20 +5,46 @@
 #include <fstream>
 #include <stdlib.h>
 #include <string>
+#include <chrono>
 
 using std::cout;
 using std::endl;
 using std::cerr;
+using std::vector
 
 // TODO: Added definition for BUS_NAME as place holder
 
-void printvec(std::vector<double> v) {
+void printvec(vector<double> v) {
   for (int i = 0; i < (int)v.size(); i++) {
     cout << v[i] << " ";
   }
   cout << endl;
   return;
 }
+
+void poll(int freq, vector<SensorInterface> s) {
+  system_clock::time_point now = system_clock::now();
+    auto s = duration_cast<seconds>(now.time_since_epoch());
+    system_clock::time_point next_full_second = system_clock::time_point(++s);
+
+    auto interval = seconds(1); // or milliseconds(500) or whatever
+    auto wait_until = next_full_second;
+
+    while (1)
+    {
+        this_thread::sleep_until(wait_until);
+        cout << system_clock::now() << endl;
+
+        // do something
+        for (int i = 0; i < (int)s.size(); i++) {
+          printvec(s[i].read());
+        }
+
+        wait_until += interval;
+    }
+}
+
+
 
 int main(/*int argc, char* argv[]*/) {
 
@@ -62,7 +88,8 @@ int main(/*int argc, char* argv[]*/) {
   }
 
 
-  
+  auto begin = std::chrono::high_resolution_clock::now();
+
   Imu I = Imu(spi_d(pi, spi_handle));
   ADC a0 = ADC(fd1, 0, true);
   ADC a1 = ADC(fd1, 1, true);
@@ -87,9 +114,15 @@ int main(/*int argc, char* argv[]*/) {
   printvec(a5.read());
 
   printvec(gps.read());
+  auto end = std::chrono::high_resolution_clock::now();
 
+  std::chrono::duration<double> diff = end - start;
+  std::cout << "Time to poll" << std::setw(9)
+                  << size << " ints : " << diff.count() << " s\n";
 
-//  close(fd2);
+  poll(860, vector<SensorInterface>({a0}));
+
+  close(fd2);
   close(fd1);
 
   spi_close(pi, spi_handle);
