@@ -1,4 +1,5 @@
 #include "gyro.hpp"
+
 #include <iostream>
 
 using std::vector;
@@ -25,7 +26,7 @@ void Gyro::reset() {
 
 
   // Inform chip to start collecting data
-  i2c_write(fd, adr, 0x11, std::stoi("11110010", nullptr, 2));
+  i2c_write(fd, adr, 0x11, std::stoi("10100010", nullptr, 2));
   return;
 }
 

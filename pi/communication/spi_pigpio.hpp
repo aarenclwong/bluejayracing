@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "spi_d.hpp"
+#include <pigpiod_if2.h>
 #include <cstdint>
 #include <linux/spi/spidev.h>
 

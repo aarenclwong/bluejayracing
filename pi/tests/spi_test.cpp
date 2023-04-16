@@ -106,9 +106,10 @@ int main(/*int argc, char* argv[]*/) {
 
   // Open a SPI device with a frequency of 1 MHz
   const int spi_channel = 0;
-  const int spi_frequency = 1000000; // 1 MHz
+  const int spi_frequency = 5000000; // 1 MHz
   // const int spi_handle = spiOpen(spi_channel, spi_frequency, 0);
   const int spi_handle = spi_open(pi, spi_channel, spi_frequency, 0);
+
 
   if (spi_handle < 0){
     std::cout << "Failed to open SPI device\n";
@@ -141,19 +142,27 @@ int main(/*int argc, char* argv[]*/) {
     // buf.push_back(spi_read(spi_d(pi, spi_handle), 0x2C));
     // buf.push_back(spi_read(spi_d(pi, spi_handle), 0x2D));
     vector<uint8_t> buf = spi_bulk_read(spi_d(pi, spi_handle), 0x28, 6);
+    //spi_bulk_read(spi_d(pi, spi_handle), 0x28, 6);
 
-    cout << static_cast<int16_t>(static_cast<uint16_t>(buf[1]) << 8 | static_cast<uint16_t>(buf[0]))*.000061 << ",";
-    cout << static_cast<int16_t>(static_cast<uint16_t>(buf[3]) << 8 | static_cast<uint16_t>(buf[2]))*.000061 << ",";
-    cout << static_cast<int16_t>(static_cast<uint16_t>(buf[5]) << 8 | static_cast<uint16_t>(buf[4]))*.000061 << endl;
+    data.push_back(static_cast<int16_t>(static_cast<uint16_t>(buf[1]) << 8 | static_cast<uint16_t>(buf[0]))*.000061);
+    data.push_back(static_cast<int16_t>(static_cast<uint16_t>(buf[3]) << 8 | static_cast<uint16_t>(buf[2]))*.000061);
+    data.push_back(static_cast<int16_t>(static_cast<uint16_t>(buf[5]) << 8 | static_cast<uint16_t>(buf[4]))*.000061);
+    
+    // cout << static_cast<int16_t>(static_cast<uint16_t>(buf[1]) << 8 | static_cast<uint16_t>(buf[0]))*.000061 << ", ";
+    // cout << static_cast<int16_t>(static_cast<uint16_t>(buf[3]) << 8 | static_cast<uint16_t>(buf[2]))*.000061 << ", ";
+    // cout << static_cast<int16_t>(static_cast<uint16_t>(buf[5]) << 8 | static_cast<uint16_t>(buf[4]))*.000061 << endl;
 
-    for (int i = 0; i < 6; i++) {
-      string s = bitset<8>(buf[i]).to_string();
-      std::reverse(s.begin(), s.end());
-      buf[i] = bitset<8>(s).to_ulong();
-    }
+    // for (int i = 0; i < 6; i++) {
+    //   string s = bitset<8>(buf[i]).to_string();
+    //   std::reverse(s.begin(), s.end());
+    //   buf[i] = bitset<8>(s).to_ulong();
+    // }
 
     // cout << (bitset<16>(buf[5]) << 8 | bitset<16>(buf[4])).to_string() << endl;
   }
+
+  cout << "read" << endl;
+
   
   /*
   // cout << bitset<8>(buf[4]).to_string() << ", " << bitset<8>(buf[5]).to_string() << endl;

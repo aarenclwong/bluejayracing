@@ -1,6 +1,8 @@
 #ifndef MTK3339_GPS_HPP
 #define MTK3339_GPS_HPP
 
+#include "libgpsmm.h"
+
 // Unsure why this header was included
 //#include "../../communication/uart.hpp"
 
@@ -15,6 +17,7 @@ public:
   void reset() override;
   std::vector<double> read() override;
 private:
+  gpsmm gps_rec;
 };
 
 #endif

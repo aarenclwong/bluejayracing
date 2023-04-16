@@ -71,7 +71,7 @@ vector<uint8_t> i2c_bulk_read(int fd, uint8_t slave_addr, uint8_t reg, int len) 
   outbuf[0] = reg;
   if (ioctl(fd, I2C_RDWR, &msgset) < 0) {
     free(inbuf);
-    perror("ioctl(I2C_RDWR) in i2c_read");
+    perror("ioctl(I2C_RDWR) in i2c_bulk_read");
     return vector<uint8_t>();
   }
   std::vector<uint8_t> ret;
@@ -103,7 +103,7 @@ int i2c_bulk_write(int fd, uint8_t slave_addr, uint8_t reg, vector<uint8_t> data
 
   if (ioctl(fd, I2C_RDWR, &msgset) < 0) {
     free(outbuf);
-    perror("ioctl(I2C_RDWR) in i2c_read");
+    perror("ioctl(I2C_RDWR) in i2c_bulk_write");
     return -1;
   }
   free(outbuf);

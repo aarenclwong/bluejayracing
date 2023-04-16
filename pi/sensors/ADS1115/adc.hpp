@@ -11,16 +11,19 @@ public:
   ADC();
   ADC(int fd);
   ADC(int fd, int location);
+  ADC(int fd, int location, bool single_channel);
   ~ADC();
   
+  
   std::vector<double> read();
-  void swap(int channel);
+  void swap_mux();
   void reset();
   
 private:
-  int adr;
+  ADCConstantContainer const_configs;
   int fd;
-  int mux;
+  int adr;
+  int current_mux;
   Adafruit_ADS1115 ads;
 };
 

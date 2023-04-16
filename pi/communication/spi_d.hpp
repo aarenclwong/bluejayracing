@@ -6,8 +6,8 @@ public:
   int pi;
   int spi_handle;
   
-  spi_d();
-  spi_d(int pi, int fd):pi(pi), spi_handle(fd) {return;}
+  spi_d(): pi{-1}, spi_handle{-1} {return;}
+  spi_d(int pi, int fd):pi{pi}, spi_handle{fd} {return;}
 };
 
 #endif

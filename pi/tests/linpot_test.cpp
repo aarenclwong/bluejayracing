@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <stdlib.h>
+#include <string>
 
 using std::cout;
 using std::endl;
@@ -12,31 +13,32 @@ using std::vector;
 using std::to_string;
 using std::remove;
 using std::rename;
+using std::string;
 
 
 
-// TODO: Added definition for BUS_NAME as place holder
-char BUS_NAME = '2';
 
 int main(/*int argc, char* argv[]*/) {
-
   std::ofstream temp;
   temp.open("temp.txt");
-  temp << std::fixed << std::showpoint << std::setprecision(6);
+  temp << std::fixed << std::showpoint << std::setprecision(1);
+  
 
   
   int fd = open("/dev/i2c-6", O_RDWR);
   if (fd < 0) {
-    char err[200];
-    sprintf(err, "Failed to open i2c bus (%c) ", BUS_NAME);
+    return -1;
   }
 
-  ADC a = ADC(fd, 2, true);
-  for (int i = 0; i < 100000; i++) {
+  std::cout << "Device opened" << endl;
+
+  ADC a = ADC(fd, 0, false);
+
+  std::cout << "ADC Initialized" << endl;
+  for (int i = 0; true ; i++) {
     vector<double> data = a.read();
     temp << data[0] << endl;
-    cout << data[0] << endl;
-    usleep(1);
+    usleep(1000);
   }
   
   temp.close();

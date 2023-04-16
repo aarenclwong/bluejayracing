@@ -26,16 +26,10 @@ void Accelerometer::reset() {
   return;
 }
 
-#include <bitset>
-using std::bitset;
-
 vector<double> Accelerometer::read() {
   vector<double> data = vector<double>();
   
   vector<uint8_t> buf = i2c_bulk_read(fd, adr, this->DATA_REGISTER, this->READ_LENGTH);
-
-  cout << (bitset<16>(buf[5]) << 8 | bitset<16>(buf[4])).to_string() << endl;
-
 
   data.push_back(static_cast<int16_t>(static_cast<uint16_t>(buf[1]) << 8 | static_cast<uint16_t>(buf[0]))*.000061);
 	data.push_back(static_cast<int16_t>(static_cast<uint16_t>(buf[3]) << 8 | static_cast<uint16_t>(buf[2]))*.000061);

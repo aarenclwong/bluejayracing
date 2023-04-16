@@ -1,35 +1,104 @@
-#include "sensors/ISM330DHCX/accelerometer.hpp"
-#include "sensors/ISM330DHCX/gyro.hpp"
+#include "sensors/ISM330DHCX/imu.hpp"
 #include "sensors/ADS1115/adc.hpp"
 #include "sensors/MTK3339/gps.hpp"
 #include <iostream>
+#include <fstream>
+#include <stdlib.h>
+#include <string>
 
 using std::cout;
 using std::endl;
+using std::cerr;
 
 // TODO: Added definition for BUS_NAME as place holder
-char BUS_NAME = '2';
 
+void printvec(std::vector<double> v) {
+  for (int i = 0; i < (int)v.size(); i++) {
+    cout << v[i] << " ";
+  }
+  cout << endl;
+  return;
+}
 
 int main(/*int argc, char* argv[]*/) {
 
-  int fd = open("/dev/i2c-2", O_RDWR);
-  if (fd < 0) {
-    char err[200];
-    sprintf(err, "Failed to open i2c bus (%c) ", BUS_NAME);
+  gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
+
+  const int pi = pigpio_start(NULL, NULL);
+  if (pi < 0) {
+    cout << "bad daemon" << endl;
+    return 1;
   }
 
-  Accelerometer accel = Accelerometer(fd);
-  Gyro gyro = Gyro(fd);
-  ADC adc = ADC(fd);
+
+  // Open a SPI device with a frequency of 1 MHz
+  const int spi_channel = 0;
+  const int spi_frequency = 1000000; // 1 MHz
+  // const int spi_handle = spiOpen(spi_channel, spi_frequency, 0);
+  const int spi_handle = spi_open(pi, spi_channel, spi_frequency, 0);
+
+  if (spi_handle < 0){
+    std::cout << "Failed to open SPI device\n";
+    cout << spi_handle << endl;
+    spi_close(pi, spi_handle);
+    pigpio_stop(pi);
+    // gpioTerminate();
+    return 1;
+  }
+
+
+  int fd1 = open("/dev/i2c-1", O_RDWR);
+  if (fd1 < 0) {
+    cerr << "Failed to open i2c bus 1" << endl;
+    return -1;
+  }
+
+
+
+  int fd2 = open("/dev/i2c-6", O_RDWR);
+  if (fd2 < 0) {
+    cerr << "Failed to open i2c bus 6" << endl;
+    return -1;
+  }
+
+
+  
+  Imu I = Imu(spi_d(pi, spi_handle));
+  ADC a0 = ADC(fd1, 0, true);
+  ADC a1 = ADC(fd1, 1, true);
+
+
+  ADC a2 = ADC(fd2, 0, false);
+  ADC a3 = ADC(fd2, 1, false);
+  ADC a4 = ADC(fd2, 2, true);
+  ADC a5 = ADC(fd2, 3, true);
+
+
   GPS gps = GPS();
 
-  accel.read();
-  gyro.read();
-  adc.read();
-  gps.read();
+  printvec(I.read());
+  printvec(a0.read());
+  printvec(a1.read());
 
 
-  close(fd);
+  printvec(a2.read());
+  printvec(a3.read());
+  printvec(a4.read());
+  printvec(a5.read());
+
+  printvec(gps.read());
+
+
+//  close(fd2);
+  close(fd1);
+
+  spi_close(pi, spi_handle);
+
+  pigpio_stop(pi);
+
+
+  std::ofstream temp;
+  temp.open("onstartup.txt");
+  temp.close();
   return 0;
 }
