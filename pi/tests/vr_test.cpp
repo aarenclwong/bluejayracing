@@ -31,7 +31,7 @@ int main(/*int argc, char* argv[]*/) {
     cerr <<  "Failed to open i2c bus 6" << endl;
   }
 
-  ADC a = ADC(fd, 0, false);
+  ADC a = ADC(fd, 1, false);
   deque<double> d = deque<double>();
   for (int i = 0; i < 2048; i++) d.push_front(0);
 
@@ -55,7 +55,7 @@ int main(/*int argc, char* argv[]*/) {
     double rpm = (max.first*860*60)/(2.0 * 56.0 * 2048);
     double freq = max.first;
     temp << data[0] << ", " << rpm << ", " << max.second << endl;
-
+    cout << data[0] << ", " << rpm << ", " << max.second << endl;
     usleep(1000);
     //a.swap_mux(0);
   }
