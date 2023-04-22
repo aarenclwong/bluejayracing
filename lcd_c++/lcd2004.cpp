@@ -97,12 +97,10 @@ void write(int x, int y, char data[]){
 	}
 }
 
-
-void main(){
+// main function
+int main(){
 	fd = wiringPiI2CSetup(LCDAddr);
 	init();
-	write(0, 0, 'Hello, world');
-	write(0, 1, 'IIC/I2C LCD2004');
-	write(0, 2, '20 cols, 4 rows');
-	write(0, 3, 'www.sunfounder.com');
+	write(0, 0, "Bluejay Racing");
+	write(0, 1, "I2C LCD2004");
 }
