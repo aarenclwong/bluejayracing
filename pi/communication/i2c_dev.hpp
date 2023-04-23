@@ -51,7 +51,7 @@
   i2c_write(accel_adr, 0x2D, 0x0008);
 
 */
-
+int i2c_write_adr(int fd, std::uint8_t slave_addr, std::uint8_t data);
 
 int i2c_write(int fd, std::uint8_t slave_addr, std::uint8_t reg, std::uint8_t data);
 

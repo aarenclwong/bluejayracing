@@ -4,6 +4,29 @@
 using std::uint8_t;
 using std::vector;
 
+int i2c_write_adr(int fd, uint8_t slave_addr, uint8_t data) {
+  uint8_t outbuf[1];
+
+  struct i2c_msg msgs[1];
+  struct i2c_rdwr_ioctl_data msgset[1];
+
+  outbuf[0] = data;
+
+  msgs[0].addr = slave_addr;
+  msgs[0].flags = 0;
+  msgs[0].len = 1;
+  msgs[0].buf = outbuf;
+
+  msgset[0].msgs = msgs;
+  msgset[0].nmsgs = 1;
+
+  if (ioctl(fd, I2C_RDWR, &msgset) < 0) {
+    perror("ioctl(I2C_RDWR) in i2c_write");
+  }
+    
+  return 0;
+}
+
 int i2c_write(int fd, uint8_t slave_addr, uint8_t reg, uint8_t data) {
   uint8_t outbuf[2];
 
