@@ -13,10 +13,20 @@ using std::cout;
 using std::endl;
 using std::cerr;
 using std::vector;
+using std::string;
 
 
 
 // TODO: Added definition for BUS_NAME as place holder
+
+string outvec(vector<double v) {
+  string out = "";
+  for (int i = 0; i < (int)v.size()-1; i++) {
+    out += (string)v[i] << ",";
+  }
+  out += (string)v[v.size()] +"\n";
+  return out;
+}
 
 void printvec(vector<double> v) {
   for (int i = 0; i < (int)v.size(); i++) {
@@ -26,6 +36,7 @@ void printvec(vector<double> v) {
   return;
 }
 
+/*
 void poll(int freq, vector<SensorInterface*> si) {
   std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     auto s = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch());
@@ -37,7 +48,7 @@ void poll(int freq, vector<SensorInterface*> si) {
     while (1)
     {
         this_thread::sleep_until(wait_until);
-        cout << std::chrono::system_clock::now() << endl;
+        cout << (std::chrono::system_clock::now()-s).count() << endl;
 
         // do something
         for (int i = 0; i < (int)si.size(); i++) {
@@ -47,20 +58,40 @@ void poll(int freq, vector<SensorInterface*> si) {
         wait_until += interval;
     }
 }
+*/
+void poll(string file, int log_num, vector<double> (*func)(void) ) {
+  int iter = 0;
+  while(1) {
+    std::ofstream temp;
+    temp.open(file + (string)iter);
+    for(int i = 0; i < log_num; i++) {
+      temp << outvec(func());
+    }
+    temp.close();
+  }
+}
 
+void front() {
+  auto begin = std::chrono::high_resolution_clock::now();
+  int fd2 = open("/dev/i2c-6", O_RDWR);
+  if (fd2 < 0) {
+    cerr << "Failed to open i2c bus 6" << endl;
+    return -1;
+  }
+  ADC a2 = ADC(fd2, 0, false);
+  ADC a3 = ADC(fd2, 1, false);
+  ADC a4 = ADC(fd2, 2, true);
+  ADC a5 = ADC(fd2, 3, true);
 
+}
 
-int main(/*int argc, char* argv[]*/) {
-
-  gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
-
+void imu() {
+  auto begin = std::chrono::high_resolution_clock::now();
   const int pi = pigpio_start(NULL, NULL);
   if (pi < 0) {
     cout << "bad daemon" << endl;
     return 1;
   }
-
-
   // Open a SPI device with a frequency of 1 MHz
   const int spi_channel = 0;
   const int spi_frequency = 1000000; // 1 MHz
@@ -76,36 +107,56 @@ int main(/*int argc, char* argv[]*/) {
     return 1;
   }
 
+  Imu I = Imu(spi_d(pi, spi_handle));
+}
 
+void center() {
+  auto begin = std::chrono::high_resolution_clock::now();
   int fd1 = open("/dev/i2c-1", O_RDWR);
   if (fd1 < 0) {
     cerr << "Failed to open i2c bus 1" << endl;
     return -1;
   }
-
-
-
-  int fd2 = open("/dev/i2c-6", O_RDWR);
-  if (fd2 < 0) {
-    cerr << "Failed to open i2c bus 6" << endl;
-    return -1;
-  }
-
-
-  auto begin = std::chrono::high_resolution_clock::now();
-
-  Imu I = Imu(spi_d(pi, spi_handle));
   ADC a0 = ADC(fd1, 0, true);
   ADC a1 = ADC(fd1, 1, true);
 
+}
 
-  ADC a2 = ADC(fd2, 0, false);
-  ADC a3 = ADC(fd2, 1, false);
-  ADC a4 = ADC(fd2, 2, true);
-  ADC a5 = ADC(fd2, 3, true);
-
-
+void gps() {
+  auto begin = std::chrono::high_resolution_clock::now();
+  gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
   GPS gps = GPS();
+
+}
+
+
+int main(/*int argc, char* argv[]*/) {
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+  
+
+
+  
+
+  
+  
+
+
+  
+
+
+  
 
   printvec(I.read());
   printvec(a0.read());
@@ -121,9 +172,9 @@ int main(/*int argc, char* argv[]*/) {
   auto end = std::chrono::high_resolution_clock::now();
 
   std::chrono::duration<double> diff = end - begin;
-  std::cout << "Time to poll"  << " ints : " << diff.count() << " s\n";
+  //std::cout << "Time to poll"  << " ints : " << diff.count() << " s\n";
 
-  poll(860, vector<SensorInterface*>({&a0}));
+  //poll(860, vector<SensorInterface*>({&a0}));
 
   close(fd2);
   close(fd1);
@@ -133,8 +184,7 @@ int main(/*int argc, char* argv[]*/) {
   pigpio_stop(pi);
 
 
-  std::ofstream temp;
-  temp.open("onstartup.txt");
+  
   temp.close();
   return 0;
 }
