@@ -21,7 +21,7 @@ int i2c_write_adr(int fd, uint8_t slave_addr, uint8_t data) {
   msgset[0].nmsgs = 1;
 
   if (ioctl(fd, I2C_RDWR, &msgset) < 0) {
-    perror("ioctl(I2C_RDWR) in i2c_write");
+    //perror("ioctl(I2C_RDWR) in i2c_write");
   }
     
   return 0;
@@ -45,7 +45,7 @@ int i2c_write(int fd, uint8_t slave_addr, uint8_t reg, uint8_t data) {
   msgset[0].nmsgs = 1;
 
   if (ioctl(fd, I2C_RDWR, &msgset) < 0) {
-    perror("ioctl(I2C_RDWR) in i2c_write");
+    //perror("ioctl(I2C_RDWR) in i2c_write");
   }
     
   return 0;
@@ -68,7 +68,7 @@ int i2c_read(int fd, uint8_t slave_addr, uint8_t reg, uint8_t* &result) {
   outbuf[0] = reg;
   inbuf[0] = 0;
   if (ioctl(fd, I2C_RDWR, &msgset) < 0) {
-    perror("ioctl(I2C_RDWR) in i2c_read");
+    //perror("ioctl(I2C_RDWR) in i2c_read");
   }
   result = &inbuf[0];
   return 0;
@@ -94,7 +94,7 @@ vector<uint8_t> i2c_bulk_read(int fd, uint8_t slave_addr, uint8_t reg, int len) 
   outbuf[0] = reg;
   if (ioctl(fd, I2C_RDWR, &msgset) < 0) {
     free(inbuf);
-    perror("ioctl(I2C_RDWR) in i2c_bulk_read");
+    //perror("ioctl(I2C_RDWR) in i2c_bulk_read");
     return vector<uint8_t>();
   }
   std::vector<uint8_t> ret;

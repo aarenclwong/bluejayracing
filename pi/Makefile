@@ -36,6 +36,9 @@ vr_test: tests/vr_test.cpp adc.o i2c_dev.o adafruit_ads.o processing/fourier.hpp
 linpot_test: tests/linpot_test.cpp adc.o i2c_dev.o adafruit_ads.o
 	$(CXX) -o linpot_test tests/linpot_test.cpp adc.o i2c_dev.o adafruit_ads.o $(CFLAGS)
 
+lcd_test: tests/lcd_test.cpp lcd.o i2c_dev.o
+	$(CXX) -o lcd_test tests/lcd_test.cpp lcd.o i2c_dev.o $(CFLAGS)
+
 
 main: main.cpp accelerometer.o gyro.o adc.o gps.o imu.o i2c_dev.o adafruit_ads.o spi_pigpio.o 
 	$(CXX) -o main main.cpp accelerometer.o gyro.o adc.o gps.o imu.o i2c_dev.o adafruit_ads.o spi_pigpio.o  $(CFLAGS)
@@ -64,6 +67,9 @@ adafruit_ads.o: sensors/ADS1115/adafruit_ads.hpp sensors/ADS1115/adafruit_ads.cp
 
 imu.o: sensors/ISM330DHCX/imu.cpp sensors/ISM330DHCX/imu.hpp sensors/ISM330DHCX/ISM330DHCX.hpp
 	$(CXX) -c sensors/ISM330DHCX/imu.cpp $(CFLAGS)
+
+lcd.o: ui/lcd2004/lcd.cpp ui/lcd2004/lcd.hpp
+	$(CXX) -c ui/lcd2004/lcd.cpp $(CFLAGS)
 
 clean:
 	rm -rf *.o *.gch *out *~ accel_test gyro_test main adc_test spi_test gps_test imu_test multiple_adc_test linpot_test vr_test
