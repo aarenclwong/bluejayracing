@@ -32,7 +32,7 @@ vector<double> GPS::read() {
   struct gps_data_t* data;
 
   for(;;) {
-    if (gps_rec.waiting(500)) break;
+    if (gps_rec.waiting(50)) break;
   }
   
 

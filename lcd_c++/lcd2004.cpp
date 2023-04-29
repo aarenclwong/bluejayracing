@@ -30,7 +30,7 @@ void send_command(int comm){
 	buf = comm & 0xF0;
 	buf |= 0x04;			// RS = 0, RW = 0, EN = 1
 	write_word(buf);
-	delay(2);
+	sleep(2);
 	buf &= 0xFB;			// Make EN = 0
 	write_word(buf);
 
@@ -38,7 +38,7 @@ void send_command(int comm){
 	buf = (comm & 0x0F) << 4;
 	buf |= 0x04;			// RS = 0, RW = 0, EN = 1
 	write_word(buf);
-	delay(2);
+	sleep(2);
 	buf &= 0xFB;			// Make EN = 0
 	write_word(buf);
 }
@@ -49,7 +49,7 @@ void send_data(int data){
 	buf = data & 0xF0;
 	buf |= 0x05;			// RS = 1, RW = 0, EN = 1
 	write_word(buf);
-	delay(2);
+	sleep(2);
 	buf &= 0xFB;			// Make EN = 0
 	write_word(buf);
 
@@ -57,20 +57,20 @@ void send_data(int data){
 	buf = (data & 0x0F) << 4;
 	buf |= 0x05;			// RS = 1, RW = 0, EN = 1
 	write_word(buf);
-	delay(2);
+	sleep(2);
 	buf &= 0xFB;			// Make EN = 0
 	write_word(buf);
 }
 
 void init(){
 	send_command(0x33);	// Must initialize to 8-line mode at first
-	delay(5);
+	sleep(5);
 	send_command(0x32);	// Then initialize to 4-line mode
-	delay(5);
+	sleep(5);
 	send_command(0x28);	// 2 Lines & 5*7 dots
-	delay(5);
+	sleep(5);
 	send_command(0x0C);	// Enable display without cursor
-	delay(5);
+	sleep(5);
 	send_command(0x01);	// Clear Screen
 	wiringPiI2CWrite(fd, 0x08);
 }

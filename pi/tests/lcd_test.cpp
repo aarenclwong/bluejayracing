@@ -5,10 +5,22 @@
 using std::vector;
 using std::string;
 using std::cerr;
+using std::cout;
+using std::endl;
+using std::to_string;
 
+string outvec(vector<double> v) {
+  string out = "";
+  for (int i = 0; i < (int)v.size()-1; i++) {
+    out += to_string(v[i]) + ",";
+  }
 
+  if (v.size() > 0) out += to_string(v[v.size()-1]);
+  return out;
+}
 
 int main(/*int argc, char* argv[]*/) {
+
   int fd = open("/dev/i2c-1", O_RDWR);
   if (fd < 0) {
     cerr <<"Failed to open i2c bus (%c) ";

@@ -416,7 +416,7 @@ void Adafruit_ADS1X15::writeRegister(uint8_t reg, uint16_t value) {
 /**************************************************************************/
 uint16_t Adafruit_ADS1X15::readRegister(uint8_t reg) {
   vector<uint8_t> r = i2c_bulk_read(this->fd, this->adr, reg, 2);
-  return (r[0]<<8 | r[1]);
+  return (r.size() >= 2 ? r[0]<<8 | r[1] : 0);
 
   // buffer[0] = reg;
   // m_i2c_dev->write(buffer, 1);

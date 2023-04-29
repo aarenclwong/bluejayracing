@@ -1,1 +1,12 @@
+.vscode*
 .vscode
+main
+adc_test
+accel_test
+gps_test
+gyro_test
+imu_test
+multiple_adc_test
+lcd_test
+linpot_test
+
