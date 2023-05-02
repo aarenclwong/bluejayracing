@@ -2,6 +2,7 @@
 #include "sensors/ISM330DHCX/imu.hpp"
 #include "sensors/ADS1115/adc.hpp"
 #include "sensors/MTK3339/gps.hpp"
+#include "ui/lcd2004/lcd.hpp"
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
@@ -42,7 +43,6 @@ void printvec(vector<double> v) {
 void front_worker() {
   cout << "Front worker has started." << endl;
   
-  /* THE CODE BELOW LIKELY WORKS. COMMENTING OUT TO TEST THREADING
   auto begin = std::chrono::high_resolution_clock::now();
   int fd2 = open("/dev/i2c-6", O_RDWR);
   if (fd2 < 0) {
@@ -54,16 +54,15 @@ void front_worker() {
   ADC a3 = ADC(fd2, 1, false);
   ADC a4 = ADC(fd2, 2, true);
   ADC a5 = ADC(fd2, 3, true);
-
+  
   const static string file_prefix = "front_";
   int iter = 0;
   while(1) {
-    
-    
     std::ofstream temp;
     temp.open(file_prefix + to_string(iter));
     for (int i = 0; i < LOG_LENGTH; i++) {
       
+      // Block until we hit the next occurence of 1/860 seconds
       auto log = std::chrono::high_resolution_clock::now();
       std::chrono::duration<double> diff = log - begin;
       try {
@@ -85,8 +84,6 @@ void front_worker() {
     temp.close();
     iter++;
   }
-  
-  END COMMENTED OUT */
 }
 
 void imu_worker() {
@@ -121,7 +118,6 @@ void imu_worker() {
 void center_worker() {
   cout << "Center worker has started." << endl;
   
-  /* THE CODE BELOW IS NOT FINISHED. COMMENTING OUT TO TEST THREADING
   //auto begin = std::chrono::high_resolution_clock::now();
   int fd1 = open("/dev/i2c-1", O_RDWR);
   if (fd1 < 0) {
@@ -129,14 +125,9 @@ void center_worker() {
     return;
   }
   ADC a0 = ADC(fd1, 0, true);
+  LCD lcd = LCD(fd1);
   
   // TODO: construct the LCD
-  
-  while (1) {
-    // TODO: Output the speed onto the LCD
-    std::this_thread::sleep_for(std::chrono::milliseconds(250));
-  }
-  */
 }
 
 void gps_worker() {
@@ -153,11 +144,6 @@ int main(/*int argc, char* argv[]*/) {
   thread front(front_worker);
   thread center(center_worker);
   thread imu(imu_worker);
-  
-  // TODO:
-  // Take recent logs from each thread to print onto ADC
-  
-  
   
   // Indefinite blocking. Workers will be runing in infinite loops
   gps.join();

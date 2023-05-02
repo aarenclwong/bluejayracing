@@ -1,5 +1,5 @@
 # For more options and information see
-# http://rpf.io/configtxt
+0;10;1c# http://rpf.io/configtxt
 # Some settings may impact device functionality. See link above for details
 
 # uncomment if you get no picture on HDMI for a default "safe" mode
@@ -36,13 +36,16 @@
 #sdtv_mode=2
 
 #uncomment to overclock the arm. 700 MHz is the default.
+#1.5ghz for rpi 4b
 #arm_freq=800
 
 # Uncomment some or all of these to enable the optional hardware interfaces
 dtparam=i2c_arm=on,i2c_arm_baudrate=400000
 #dtoverlay=i2c-gpio,bus=3,i2c_gpio_delay_us=1,i2c_gpio_sda=5,i2c_gpio_scl=6
 dtoverlay=i2c6,pins_0_1,baudrate=400000
+dtoverlay=i2c-gpio,bus=4,i2c_gpio_delay_us=1,i2c_gpio_sda=5,i2c_gpio_scl=6
 dtoverlay=i2c1
+
 #dtparam=i2s=on
 
 dtparam=spi=on
@@ -89,3 +92,4 @@ arm_boost=1
 
 [all]
 enable_uart=1
+gpu_mem=64

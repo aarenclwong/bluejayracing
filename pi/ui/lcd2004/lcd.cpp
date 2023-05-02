@@ -15,19 +15,32 @@ using std::exception;
 
 LCD::LCD(): fd{-1} {;}
 
-LCD::LCD(int fd): fd{fd} {reset();}
+LCD::LCD(int fd): fd{fd} {
+	reset();
+	// std::string welcomestring = "Bluejay Racing";
+	// for (int i = 0; i < (int)welcomestring.size(); i++){
+	// 	send_data(welcomestring[i]);
+	// 	if (i < 7){
+	// 		usleep(250000);
+	// 	}
+	// }
+	// usleep(5000000);
+	// reset();
+}
 
 LCD::~LCD() {;}
 
 void LCD::reset() {
   send_command(0x33);	// Must initialize to 8-line mode at first
-	usleep(5);
+	usleep(5000);
 	send_command(0x32);	// Then initialize to 4-line mode
-	usleep(5);
+	usleep(5000);
 	send_command(0x28);	// 2 Lines & 5*7 dots
-	usleep(5);
+	usleep(5000);
+	send_command(0x08);	// 4 
+	usleep(5000);
 	send_command(0x0C);	// Enable display without cursor
-	usleep(5);
+	usleep(5000);
 	send_command(0x01);	// Clear Screen
 	i2c_write_adr(fd, adr, 0x08);
 }
@@ -47,7 +60,7 @@ void LCD::send_command(int comm) {
 	buf = comm & 0xF0;
 	buf |= 0x04;			// RS = 0, RW = 0, EN = 1
 	write_word(buf);
-	usleep(2);
+	usleep(2000);
 	buf &= 0xFB;			// Make EN = 0
 	write_word(buf);
 
@@ -55,7 +68,7 @@ void LCD::send_command(int comm) {
 	buf = (comm & 0x0F) << 4;
 	buf |= 0x04;			// RS = 0, RW = 0, EN = 1
 	write_word(buf);
-	usleep(2);
+	usleep(2000);
 	buf &= 0xFB;			// Make EN = 0
 	write_word(buf);
 }
@@ -66,21 +79,21 @@ void LCD::send_data(int data){
 	buf = data & 0xF0;
 	buf |= 0x05;			// RS = 1, RW = 0, EN = 1
 	write_word(buf);
-	usleep(2);
+	usleep(2000);
 	buf &= 0xFB;			// Make EN = 0
 	write_word(buf);
+	//usleep(2);
 
 	// Send bit3-0 secondly
 	buf = (data & 0x0F) << 4;
 	buf |= 0x05;			// RS = 1, RW = 0, EN = 1
 	write_word(buf);
-	usleep(2);
+	usleep(2000);
 	buf &= 0xFB;			// Make EN = 0
 	write_word(buf);
 }
 
 void LCD::clear() {
-	//i2c_write_adr(fd, adr, 0x01);
   send_command(0x01);
 }
 
@@ -93,7 +106,7 @@ void LCD::write(int x, int y, vector<char> data){
 	// Move cursor
 	int reg = 0x80 + 0x40 * y + x;
 	send_command(reg);
-
+	
 	for (int i = 0; i < (int)data.size(); i++){
 		send_data(data[i]);
 	}

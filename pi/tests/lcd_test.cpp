@@ -21,18 +21,21 @@ string outvec(vector<double> v) {
 
 int main(/*int argc, char* argv[]*/) {
 
-  int fd = open("/dev/i2c-1", O_RDWR);
+  int fd = open("/dev/i2c-4", O_RDWR);
   if (fd < 0) {
     cerr <<"Failed to open i2c bus (%c) ";
   }
   
   LCD l = LCD(fd);
 
-  string s1 = "Bluejay Racing";
-  string s2 = "hello";
+  string s1 = "ilike pie";
+  string s2 = "wooooooo";
+  string s3 = "speed";
+  
 
   l.write(0, 0, vector<char>(s1.begin(), s1.end()));
-	l.write(0, 1, vector<char>(s1.begin(), s1.end()));
+	l.write(0, 1, vector<char>(s2.begin(), s2.end()));
+  l.write(0, 3, vector<char>(s3.begin(), s3.end()));
 
   close(fd);
   return 0;

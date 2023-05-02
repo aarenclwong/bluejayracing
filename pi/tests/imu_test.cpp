@@ -7,7 +7,13 @@ using std::endl;
 using std::vector;
 using std::string;
 
-
+void printvec(vector<double> v) {
+  for (int i = 0; i < (int)v.size(); i++) {
+    cout << v[i] << " ";
+  }
+  cout << endl;
+  return;
+}
 
 int main(/*int argc, char* argv[]*/) {
   // int cfg = gpioCfgGetInternals();
@@ -44,7 +50,8 @@ int main(/*int argc, char* argv[]*/) {
 
   vector<double> data;
   for (int i = 0; i < 100000; i++) {
-    cout << I.read()[1] << endl;
+    printvec(I.read());
+    //cout << I.read()[1] << endl;
   }
 
   cout << "read" << endl;
