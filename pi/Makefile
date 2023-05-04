@@ -40,8 +40,8 @@ lcd_test: tests/lcd_test.cpp lcd.o i2c_dev.o
 	$(CXX) -o lcd_test tests/lcd_test.cpp lcd.o i2c_dev.o $(CFLAGS)
 
 
-main: main.cpp accelerometer.o gyro.o adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o 
-	$(CXX) -o main main.cpp accelerometer.o gyro.o adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o $(CFLAGS)
+main: main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o 
+	$(CXX) -o main main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o $(CFLAGS)
 
 
 accelerometer.o: sensors/ISM330DHCX/accelerometer.cpp sensors/ISM330DHCX/accelerometer.hpp sensors/ISM330DHCX/ISM330DHCX.hpp

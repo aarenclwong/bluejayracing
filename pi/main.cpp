@@ -146,7 +146,7 @@ void imu_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
   }
 
   Realtime::setup();
-  Realtime::cpu2()
+  Realtime::cpu2();
 
   Imu I = Imu(spi_d(pi, spi_handle));
 
