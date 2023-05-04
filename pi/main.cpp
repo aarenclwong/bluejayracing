@@ -9,6 +9,7 @@
 #include <string>
 #include <thread>
 #include <stdlib.h>
+#include <iomanip>
 
 const int LOG_LENGTH = 860*60*5;
 
@@ -44,25 +45,37 @@ void front_worker() {
   cout << "Front worker has started." << endl;
   
   auto begin = std::chrono::high_resolution_clock::now();
-  int fd2 = open("/dev/i2c-6", O_RDWR);
-  if (fd2 < 0) {
+  int fd6 = open("/dev/i2c-6", O_RDWR);
+  if (fd6 < 0) {
     cerr << "Failed to open i2c bus 6" << endl;
     return;
   }
   
-  ADC a2 = ADC(fd2, 0, false);
-  ADC a3 = ADC(fd2, 1, false);
-  ADC a4 = ADC(fd2, 2, true);
-  ADC a5 = ADC(fd2, 3, true);
+  // Single Analog
+  //ADC a2 = ADC(fd6, 0, false);
+  //ADC a3 = ADC(fd6, 1, false);
+
+  // Differential Analog - Reluctance
+  ADC a4 = ADC(fd6, 2, true);
+  ADC a5 = ADC(fd6, 3, true);
   
   const static string file_prefix = "front_";
   int iter = 0;
+
   while(1) {
     std::ofstream temp;
-    temp.open(file_prefix + to_string(iter));
-    for (int i = 0; i < LOG_LENGTH; i++) {
-      
-      // Block until we hit the next occurence of 1/860 seconds
+    string file_name = file_prefix;
+    if (iter > 99) {
+      file_name += to_string(iter);
+    } else if(iter > 9) {
+      file_name += "0" + to_string(iter);
+    } else {
+      file_name += "00" + to_string(iter);
+    }
+    temp.open(file_name);
+
+    temp << std::fixed << std::showpoint << std::setprecision(6);
+    for (int i = 0; i < LOG_LENGTH; i++) {      
       auto log = std::chrono::high_resolution_clock::now();
       std::chrono::duration<double> diff = log - begin;
       try {
@@ -71,8 +84,8 @@ void front_worker() {
         temp << outvec(a5.read()) << "\n";
       } catch (exception &e) {
         try{
-          a2.reset();
-          a3.reset();
+          //a2.reset();
+          //a3.reset();
           a4.reset();
           a5.reset();
         } catch (exception &e) {
@@ -80,17 +93,20 @@ void front_worker() {
         }
         temp << diff.count() << "x,x,x,x" << endl;
       }
+      std::this_thread::sleep_until(log+std::chrono::duration<double, std::millis>((1000.0/860.0)));
+
     }
     temp.close();
     iter++;
   }
+  fd6.close();
 }
 
 void imu_worker() {
   cout << "Imu worker has started." << endl;
   
-  /* THE CODE BELOW LIKELY WORKS. COMMENTING OUT TO TEST THREADING
-  //auto begin = std::chrono::high_resolution_clock::now();
+  // THE CODE BELOW LIKELY WORKS. COMMENTING OUT TO TEST THREADING
+  
   const int pi = pigpio_start(NULL, NULL);
   if (pi < 0) {
     cout << "bad daemon" << endl;
@@ -98,7 +114,7 @@ void imu_worker() {
   }
   // Open a SPI device with a frequency of 1 MHz
   const int spi_channel = 0;
-  const int spi_frequency = 1000000; // 1 MHz
+  const int spi_frequency = 5000000; // 1 MHz
   // const int spi_handle = spiOpen(spi_channel, spi_frequency, 0);
   const int spi_handle = spi_open(pi, spi_channel, spi_frequency, 0);
 
@@ -112,7 +128,7 @@ void imu_worker() {
   }
 
   Imu I = Imu(spi_d(pi, spi_handle));
-  */
+  
 }
 
 void center_worker() {
@@ -125,9 +141,8 @@ void center_worker() {
     return;
   }
   ADC a0 = ADC(fd1, 0, true);
-  LCD lcd = LCD(fd1);
   
-  // TODO: construct the LCD
+  
 }
 
 void gps_worker() {
@@ -140,6 +155,12 @@ void gps_worker() {
 }
 
 int main(/*int argc, char* argv[]*/) {
+  fd4 = open("/dev/i2c-4", O_RDWR);
+
+  LCD lcd = LCD(fd4);
+
+
+
   thread gps(gps_worker);
   thread front(front_worker);
   thread center(center_worker);
