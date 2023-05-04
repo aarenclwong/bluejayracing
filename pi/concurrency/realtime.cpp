@@ -16,7 +16,7 @@
 #endif
 #include <sched.h>
 
-#include "Realtime.h"
+#include "realtime.hpp"
 
 volatile uint32_t *Realtime::systReg = 0;
 int Realtime::fdMem = -1;
@@ -43,6 +43,7 @@ void Realtime::initMicros()
 	char buf[1024];
 	fgets(buf,sizeof(buf),f); // skip first line
 	fgets(buf,sizeof(buf),f); // model name
+	/*
 	if(strstr(buf,"ARMv6")) {
 		phys = 0x20000000;
 	} else if(strstr(buf,"ARMv7")) {
@@ -53,6 +54,8 @@ void Realtime::initMicros()
 		fprintf(stderr,"Unknown CPU type\n");
 		exit(1);
 	}
+	*/
+	phys = 0x3F000000;
 	fclose(f);
 	systReg = (uint32_t *)mmap(0,0x1000,PROT_READ|PROT_WRITE,
 				MAP_SHARED|MAP_LOCKED,fdMem,phys+0x3000);

@@ -24,7 +24,7 @@ public:
         } else if (location == 1) {
             address = ADS1115_ADDRESS1;
             diff_mux = ADS1X15_REG_CONFIG_MUX_DIFF_0_1;
-            single_mux = ADS1X15_REG_CONFIG_MUX_SINGLE_0;
+            single_mux = ADS1X15_REG_CONFIG_MUX_SINGLE_1;
         } else if (location == 2) {
             address = ADS1115_ADDRESS2;
             diff_mux = ADS1X15_REG_CONFIG_MUX_DIFF_0_1;

@@ -64,8 +64,8 @@
 	Or build the latency program.
 */
 
-#ifndef REALTIME_H
-#define REALTIME_H
+#ifndef REALTIME_HPP
+#define REALTIME_HPP
 
 #include <stdint.h>
 
