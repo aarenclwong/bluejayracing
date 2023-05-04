@@ -16,7 +16,7 @@
 const double ADC_RATE = 860.0;
 const int ADC_LOG_LENGTH = ADC_RATE*60*5;
 
-const double IMU_RATE = 6000.0;
+const double IMU_RATE = 2000.0;
 const int IMU_LOG_LENGTH = IMU_RATE*60*5;
 
 
@@ -76,7 +76,7 @@ void front_worker(string file_prefix,std::chrono::high_resolution_clock::time_po
     return;
   }
   
-  //Realtime::setup();
+  Realtime::setup();
 
   //Steering
   ADC a3 = ADC(fd6, 1, false);
@@ -134,14 +134,14 @@ void imu_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
   const int spi_handle = spi_open(pi, spi_channel, spi_frequency, 0);
 
   if (spi_handle < 0){
-    std::cout << "Failed to open SPI device\n";
-    cout << spi_handle << endl;
+    cerr << "Failed to open SPI device ";
+    cerr << spi_handle << endl;
     spi_close(pi, spi_handle);
     pigpio_stop(pi);
     return;
   }
 
-  Realtime::setup();
+  // Realtime::setup();
 
   Imu I = Imu(spi_d(pi, spi_handle));
 
@@ -151,6 +151,7 @@ void imu_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
     ofstream temp;
     fn_open(temp, file_prefix, iter);
 
+    auto iter_start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < IMU_LOG_LENGTH; i++) {      
       auto log = std::chrono::high_resolution_clock::now();
       std::chrono::duration<double> diff = log - begin;
@@ -164,13 +165,14 @@ void imu_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
         }
         temp << diff.count() << ",x,x,x,x,x,x,x" << endl;
       }
-      //std::this_thread::sleep_until(iter_start + i * std::chrono::duration<double, std::milli>((1000.0/IMU_RATE)));
+      std::this_thread::sleep_until(iter_start + i * std::chrono::duration<double, std::milli>((1000.0/IMU_RATE)));
 
     }
     temp.close();
     iter++;
   }
-  
+  spi_close(pi, spi_handle);
+  pigpio_stop(pi);
 }
 
 void center_worker(string file_prefix, std::chrono::high_resolution_clock::time_point begin) {
@@ -181,6 +183,10 @@ void center_worker(string file_prefix, std::chrono::high_resolution_clock::time_
     cerr << "Failed to open i2c bus 1" << endl;
     return;
   }
+
+  // Realtime::setup();
+
+
   ADC a2 = ADC(fd1, 2, true);
 
   int iter = 0;
@@ -211,22 +217,71 @@ void center_worker(string file_prefix, std::chrono::high_resolution_clock::time_
     temp.close();
     iter++;
   }
-  
-  
+  close(fd1);
 }
 
 void gps_worker(string file_prefix, std::chrono::high_resolution_clock::time_point begin) {
   cout << "GPS worker has started." << endl;
   
   // Commenting out to test threading
-  // gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
-  // GPS gps = GPS();
+  gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
+  GPS gps = GPS();
+
+  int iter = 0;
+
+  while(1) {
+    ofstream temp;
+    fn_open(temp, file_prefix, iter);
+    temp << std::setprecision(9);
+
+    temp << std::fixed << std::showpoint << std::setprecision(6);
+    auto iter_start = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> iter_diff = std::chrono::duration<double, std::milli>(0);
+    while(iter_diff.count() < 300) {
+      cout << iter_diff.count() << endl;
+      auto log = std::chrono::high_resolution_clock::now();
+      iter_diff = log - iter_start;
+      std::chrono::duration<double> diff = log - begin;
+      try {
+        vector<double> r = gps.read();
+        temp << diff.count() << "," ;
+        temp << outvec(r) << "\n";
+      } catch (exception &e) {
+        try{
+          gps.reset();
+        } catch (exception &e) {
+
+        }
+        temp << diff.count() << ",x,x,x" << endl;
+      }
+    }
+    temp.close();
+    iter++;
+  }
 
 }
 
 int main(/*int argc, char* argv[]*/) {
 
   std::ios_base::sync_with_stdio(false);
+
+  string comp = "OSH";
+  int log = 0;
+  string gps_file = comp + "_gps_"+to_string(log);
+  string front_file = comp + "_front_"+to_string(log);
+  string center_file = comp + "_center_"+to_string(log);
+  string imu_file = comp + "_imu_"+to_string(log);
+
+  // Synchronized epoch
+  auto begin = std::chrono::high_resolution_clock::now();
+
+  // Start up all the threads
+  thread gps(gps_worker, gps_file , begin);
+  thread front(front_worker, front_file, begin);
+  thread center(center_worker, center_file, begin);
+  thread imu(imu_worker, imu_file, begin);
+
+
 
   int fd4 = open("/dev/i2c-4", O_RDWR);
   if (fd4 < 0) {
@@ -235,14 +290,6 @@ int main(/*int argc, char* argv[]*/) {
   }
 
   LCD lcd = LCD(fd4);
-
-  int log = 0;
-  auto begin = std::chrono::high_resolution_clock::now();
-
-  thread gps(gps_worker, "gps_"+to_string(log), begin);
-  thread front(front_worker, "front_"+to_string(log), begin);
-  thread center(center_worker, "center_"+to_string(log), begin);
-  thread imu(imu_worker, "imu_"+to_string(log), begin);
   
   // Indefinite blocking. Workers will be runing in infinite loops
   gps.join();
