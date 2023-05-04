@@ -20,9 +20,9 @@ char BUS_NAME = '2';
 
 int main(/*int argc, char* argv[]*/) {
 
-  std::ofstream temp;
-  temp.open("temp.txt");
-  temp << std::fixed << std::showpoint << std::setprecision(6);
+  // std::ofstream temp;
+  //temp.open("temp.txt");
+  //temp << std::fixed << std::showpoint << std::setprecision(6);
 
   
   int fd = open("/dev/i2c-6", O_RDWR);
@@ -31,15 +31,15 @@ int main(/*int argc, char* argv[]*/) {
     sprintf(err, "Failed to open i2c bus (%c) ", BUS_NAME);
   }
 
-  ADC a = ADC(fd, 3, true);
+  ADC a = ADC(fd, 2, false);
   for (int i = 0; i < 100000; i++) {
     vector<double> data = a.read();
-    temp << data[0] << endl;
+    // temp << data[0] << endl;
     cout << data[0] << endl;
     usleep(1);
   }
   
-  temp.close();
+  // temp.close();
 
   close(fd);
   return 0;

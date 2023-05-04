@@ -12,6 +12,8 @@
 #include <thread>
 #include <stdlib.h>
 #include <iomanip>
+#include <fmt/core.h>
+#include <fmt/ranges.h>
 
 const double ADC_RATE = 860.0;
 const int ADC_LOG_LENGTH = ADC_RATE*60*5;
@@ -30,13 +32,15 @@ using std::exception;
 using std::thread;
 using std::ofstream;
 
+using fmt::format;
+
 string outvec(vector<double> v) {
   string out = "";
   for (int i = 0; i < (int)v.size()-1; i++) {
-    out += to_string(v[i]) + ",";
+    out += format("{},",v[i]);
   }
 
-  if (v.size() > 0) out += to_string(v[v.size()-1]);
+  if (v.size() > 0) out += format("{}",v[v.size()-1]);
   return out;
 }
 
@@ -141,7 +145,8 @@ void imu_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
     return;
   }
 
-  // Realtime::setup();
+  Realtime::setup();
+  Realtime::cpu2()
 
   Imu I = Imu(spi_d(pi, spi_handle));
 
@@ -184,7 +189,7 @@ void center_worker(string file_prefix, std::chrono::high_resolution_clock::time_
     return;
   }
 
-  // Realtime::setup();
+  Realtime::setup();
 
 
   ADC a2 = ADC(fd1, 2, true);
