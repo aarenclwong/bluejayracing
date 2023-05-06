@@ -31,7 +31,7 @@ int main(/*int argc, char* argv[]*/) {
 
   // Open a SPI device with a frequency of 1 MHz
   const int spi_channel = 0;
-  const int spi_frequency = 5000000; // 1 MHz
+  const int spi_frequency = 1000000; // 1 MHz
   // const int spi_handle = spiOpen(spi_channel, spi_frequency, 0);
   const int spi_handle = spi_open(pi, spi_channel, spi_frequency, 0);
 

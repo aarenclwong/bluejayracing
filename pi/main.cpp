@@ -37,7 +37,17 @@ using fmt::format;
 string outvec(vector<double> v) {
   string out = "";
   for (int i = 0; i < (int)v.size()-1; i++) {
-    out += format("{},",v[i]);
+    out += format("{:.6f},",v[i]);
+  }
+
+  if (v.size() > 0) out += format("{:.6f}",v[v.size()-1]);
+  return out;
+}
+
+string outvecH(vector<double> v) {
+  string out = "";
+  for (int i = 0; i < (int)v.size()-1; i++) {
+    out += format("{:.9f},",v[i]);
   }
 
   if (v.size() > 0) out += format("{}",v[v.size()-1]);
@@ -82,13 +92,22 @@ void front_worker(string file_prefix,std::chrono::high_resolution_clock::time_po
   
   Realtime::setup();
 
-  //Steering
-  ADC a3 = ADC(fd6, 1, false);
+  // //Steering
+  // ADC a3 = ADC(fd6, 1, true);
 
-  // Differential Analog - Reluctance
-  ADC a4 = ADC(fd6, 2, true);
-  ADC a5 = ADC(fd6, 3, true);
-  
+  // // Differential Analog - Reluctance
+  // ADC a4 = ADC(fd6, 2, false);
+  // ADC a5 = ADC(fd6, 3, false);
+
+  //adc test
+  // / ADC a = ADC(fd, 2, true);
+  // ADC a = ADC(fd, 0, false);
+  // ADC a = ADC(fd, 1, false);
+
+  ADC a_fr = ADC(fd6, 0, false);
+  ADC a_fl = ADC(fd6, 1, false);
+  ADC a_st = ADC(fd6, 2, true);
+
   int iter = 0;
 
   while(1) {
@@ -101,15 +120,14 @@ void front_worker(string file_prefix,std::chrono::high_resolution_clock::time_po
       std::chrono::duration<double> diff = log - begin;
       try {
         temp << diff.count() << "," ;
-        temp << outvec(a3.read()) << ",";
-        temp << outvec(a4.read()) << ",";
-        temp << outvec(a5.read()) << "\n";
+        temp << outvec(a_fr.read()) << ",";
+        temp << outvec(a_fl.read()) << ",";
+        temp << outvec(a_st.read()) << "\n";
       } catch (exception &e) {
         try{
-          //a2.reset();
-          a3.reset();
-          a4.reset();
-          a5.reset();
+          a_fr.reset();
+          a_fl.reset();
+          a_st.reset();
         } catch (exception &e) {
 
         }
@@ -134,7 +152,7 @@ void imu_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
   }
   // Open a SPI device with a frequency of 1 MHz
   const int spi_channel = 0;
-  const int spi_frequency = 5000000; // 1 MHz
+  const int spi_frequency = 1000000; // 1 MHz
   const int spi_handle = spi_open(pi, spi_channel, spi_frequency, 0);
 
   if (spi_handle < 0){
@@ -192,7 +210,7 @@ void center_worker(string file_prefix, std::chrono::high_resolution_clock::time_
   Realtime::setup();
 
 
-  ADC a2 = ADC(fd1, 2, true);
+  ADC a2 = ADC(fd1, 2, false);
 
   int iter = 0;
 
@@ -200,7 +218,6 @@ void center_worker(string file_prefix, std::chrono::high_resolution_clock::time_
     ofstream temp;
     fn_open(temp, file_prefix, iter);
 
-    temp << std::fixed << std::showpoint << std::setprecision(6);
     auto iter_start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < ADC_LOG_LENGTH; i++) {      
       auto log = std::chrono::high_resolution_clock::now();
@@ -239,18 +256,16 @@ void gps_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
     fn_open(temp, file_prefix, iter);
     temp << std::setprecision(9);
 
-    temp << std::fixed << std::showpoint << std::setprecision(6);
     auto iter_start = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> iter_diff = std::chrono::duration<double, std::milli>(0);
     while(iter_diff.count() < 300) {
-      cout << iter_diff.count() << endl;
       auto log = std::chrono::high_resolution_clock::now();
       iter_diff = log - iter_start;
       std::chrono::duration<double> diff = log - begin;
       try {
         vector<double> r = gps.read();
         temp << diff.count() << "," ;
-        temp << outvec(r) << "\n";
+        temp << outvecH(r) << endl;
       } catch (exception &e) {
         try{
           gps.reset();
@@ -271,7 +286,7 @@ int main(/*int argc, char* argv[]*/) {
   std::ios_base::sync_with_stdio(false);
 
   string comp = "OSH";
-  int log = 0;
+  int log = 4;
   string gps_file = comp + "_gps_"+to_string(log);
   string front_file = comp + "_front_"+to_string(log);
   string center_file = comp + "_center_"+to_string(log);
@@ -288,13 +303,13 @@ int main(/*int argc, char* argv[]*/) {
 
 
 
-  int fd4 = open("/dev/i2c-4", O_RDWR);
-  if (fd4 < 0) {
-    cerr << "Failed to open i2c bus 4" << endl;
-    return -1;
-  }
+  // int fd4 = open("/dev/i2c-4", O_RDWR);
+  // if (fd4 < 0) {
+  //   cerr << "Failed to open i2c bus 4" << endl;
+  //   return -1;
+  // }
 
-  LCD lcd = LCD(fd4);
+  // LCD lcd = LCD(fd4);
   
   // Indefinite blocking. Workers will be runing in infinite loops
   gps.join();

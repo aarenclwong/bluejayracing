@@ -28,11 +28,11 @@ public:
         } else if (location == 2) {
             address = ADS1115_ADDRESS2;
             diff_mux = ADS1X15_REG_CONFIG_MUX_DIFF_0_1;
-            single_mux = ADS1X15_REG_CONFIG_MUX_SINGLE_1;
+            single_mux = ADS1X15_REG_CONFIG_MUX_SINGLE_0;
         } else if (location == 3) {
             address = ADS1115_ADDRESS3;
             diff_mux = ADS1X15_REG_CONFIG_MUX_DIFF_0_1;
-            single_mux = ADS1X15_REG_CONFIG_MUX_SINGLE_1;
+            single_mux = ADS1X15_REG_CONFIG_MUX_SINGLE_0;
         }
     }
 };
