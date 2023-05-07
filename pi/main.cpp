@@ -15,6 +15,9 @@
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
+#include <ctime>
+#include <time.h>
+
 const double ADC_RATE = 860.0;
 const int ADC_LOG_LENGTH = ADC_RATE*60*5;
 
@@ -31,6 +34,8 @@ using std::to_string;
 using std::exception;
 using std::thread;
 using std::ofstream;
+
+using std::chrono::duration_cast;
 
 using fmt::format;
 
@@ -76,12 +81,43 @@ void fn_open(ofstream& f, string name, int num) {
 }
 
 
+string hs_time(std::chrono::high_resolution_clock::time_point begin) {
+  auto duration = begin.time_since_epoch();
+  /* UTC: -3:00 = 24 - 3 = 21 */
+  typedef std::chrono::duration< int, std::ratio_multiply< std::chrono::hours::period, std::ratio< 21 > >::type > Days;
+
+  Days days = std::chrono::duration_cast< Days >( duration );
+  duration -= days;
+
+  auto hours = std::chrono::duration_cast< std::chrono::hours >( duration );
+  duration -= hours;
+
+  auto minutes = std::chrono::duration_cast< std::chrono::minutes >( duration );
+  duration -= minutes;
+
+  auto seconds = std::chrono::duration_cast< std::chrono::seconds >( duration );
+  duration -= seconds;
+
+  auto milliseconds = std::chrono::duration_cast< std::chrono::milliseconds >( duration );
+  duration -= milliseconds;
+
+  auto microseconds = std::chrono::duration_cast< std::chrono::microseconds >( duration );
+  duration -= microseconds;
+
+  auto nanoseconds = std::chrono::duration_cast< std::chrono::nanoseconds >( duration );
+
+  time_t theTime = time(NULL);
+  struct tm *aTime = localtime(&theTime);
+  return format("{}:{}:{}.{}{}",aTime->tm_hour, minutes.count(), seconds.count(), milliseconds.count(), microseconds.count());
+
+}
 
 
 
 
 
-void front_worker(string file_prefix,std::chrono::high_resolution_clock::time_point begin) {
+
+void front_worker(string file_prefix, std::chrono::high_resolution_clock::time_point begin) {
   cout << "Front worker has started." << endl;
   
   int fd6 = open("/dev/i2c-6", O_RDWR);
@@ -281,27 +317,35 @@ void gps_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
 
 }
 
+
+
 int main(/*int argc, char* argv[]*/) {
 
   std::ios_base::sync_with_stdio(false);
 
   string comp = "OSH";
   int log = 4;
-  string gps_file = comp + "_gps_"+to_string(log);
-  string front_file = comp + "_front_"+to_string(log);
-  string center_file = comp + "_center_"+to_string(log);
-  string imu_file = comp + "_imu_"+to_string(log);
+  
+  string gps_file = format("{}_gps_{}", comp, log);
+  string front_file = format("{}_front_{}", comp, log);
+  string center_file = format("{}_center_{}", comp, log);
+  string imu_file = format("{}_imu_{}", comp, log);
+
+  ofstream settings_log;
+  settings_log.open(format("{}_parameters_{}",comp, log));
 
   // Synchronized epoch
   auto begin = std::chrono::high_resolution_clock::now();
 
+  settings_log << hs_time(begin) << endl;
+  settings_log << format("Rates: ADC-{} IMU-{}", ADC_RATE, IMU_RATE) << endl;
+  settings_log.close();
+  
   // Start up all the threads
   thread gps(gps_worker, gps_file , begin);
   thread front(front_worker, front_file, begin);
   thread center(center_worker, center_file, begin);
   thread imu(imu_worker, imu_file, begin);
-
-
 
   // int fd4 = open("/dev/i2c-4", O_RDWR);
   // if (fd4 < 0) {
