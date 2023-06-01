@@ -39,6 +39,8 @@ linpot_test: tests/linpot_test.cpp adc.o i2c_dev.o adafruit_ads.o
 lcd_test: tests/lcd_test.cpp lcd.o i2c_dev.o
 	$(CXX) -o lcd_test tests/lcd_test.cpp lcd.o i2c_dev.o $(CFLAGS)
 
+tourque_test: tests/tourque_test adc.o i2c_dev.o adafruit_ads.o
+	$(CXX) -o  tourque_test tests/tourque_test.cpp adc.o i2c_dev.o adafruit_ads.o$(CFLAGS)
 
 main: main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o 
 	$(CXX) -o main main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o $(CFLAGS)
@@ -75,4 +77,4 @@ realtime.o: concurrency/realtime.cpp concurrency/realtime.hpp
 	$(CXX) -c concurrency/realtime.cpp $(CFLAGS)
 
 clean:
-	rm -rf *.o *.gch *out *~ accel_test gyro_test main adc_test spi_test gps_test imu_test multiple_adc_test linpot_test vr_test lcd_test
+	rm -rf *.o *.gch *out *~ accel_test gyro_test main adc_test spi_test gps_test imu_test multiple_adc_test linpot_test vr_test lcd_test tourque_test
