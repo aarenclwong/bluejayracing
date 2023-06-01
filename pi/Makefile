@@ -14,7 +14,7 @@ accel_test: tests/accel_test.cpp accelerometer.o i2c_dev.o
 
 gyro_test: tests/gyro_test.cpp gyro.o i2c_dev.o
 	$(CXX) -o gyro_test tests/gyro_test.cpp gyro.o i2c_dev.o $(CFLAGS)
-	
+
 multiple_adc_test: tests/multiple_adc_test.cpp adc.o i2c_dev.o adafruit_ads.o
 	$(CXX) -o multiple_adc_test tests/multiple_adc_test.cpp adc.o i2c_dev.o adafruit_ads.o $(CFLAGS)
 
@@ -39,8 +39,8 @@ linpot_test: tests/linpot_test.cpp adc.o i2c_dev.o adafruit_ads.o
 lcd_test: tests/lcd_test.cpp lcd.o i2c_dev.o
 	$(CXX) -o lcd_test tests/lcd_test.cpp lcd.o i2c_dev.o $(CFLAGS)
 
-tourque_test: tests/tourque_test adc.o i2c_dev.o adafruit_ads.o
-	$(CXX) -o  tourque_test tests/tourque_test.cpp adc.o i2c_dev.o adafruit_ads.o$(CFLAGS)
+torque_test: tests/torque_test.cpp adc.o i2c_dev.o adafruit_ads.o
+	$(CXX) -o torque_test tests/torque_test.cpp adc.o i2c_dev.o adafruit_ads.o $(CFLAGS)
 
 main: main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o 
 	$(CXX) -o main main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o $(CFLAGS)
