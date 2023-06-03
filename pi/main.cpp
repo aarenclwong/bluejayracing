@@ -59,6 +59,16 @@ string outvecH(vector<double> v) {
   return out;
 }
 
+string outvecI(vector<double> v) {
+  string out = "";
+  for (int i = 0; i < (int)v.size()-1; i++) {
+    out += format("{:.0f},",v[i]);
+  }
+
+  if (v.size() > 0) out += format("{}",v[v.size()-1]);
+  return out;
+}
+
 void printvec(vector<double> v) {
   for (int i = 0; i < (int)v.size(); i++) {
     cout << v[i] << " ";
@@ -120,9 +130,9 @@ string hs_time(std::chrono::high_resolution_clock::time_point begin) {
 void front_worker(string file_prefix, std::chrono::high_resolution_clock::time_point begin) {
   cout << "Front worker has started." << endl;
   
-  int fd6 = open("/dev/i2c-6", O_RDWR);
+  int fd6 = open("/dev/i2c-5", O_RDWR);
   if (fd6 < 0) {
-    cerr << "Failed to open i2c bus 6" << endl;
+    cerr << "Failed to open i2c bus 5" << endl;
     return;
   }
   
@@ -320,9 +330,9 @@ void gps_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
 void strain_worker(string file_prefix, std::chrono::high_resolution_clock::time_point begin){
   cout << "Strain worker has started." << endl;
   
-  int fd5 = open("/dev/i2c-5", O_RDWR);
+  int fd5 = open("/dev/i2c-6", O_RDWR);
   if (fd5 < 0) {
-    cerr << "Failed to open i2c bus 5" << endl;
+    cerr << "Failed to open i2c bus 6" << endl;
     return;
   }
 
@@ -343,7 +353,7 @@ void strain_worker(string file_prefix, std::chrono::high_resolution_clock::time_
       std::chrono::duration<double> diff = log - begin;
       try {
         temp << diff.count() << "," ;
-        temp << outvec(sg_rr.read()) << "\n";
+        temp << outvecI(sg_rr.read()) << "\n";
       } catch (exception &e) {
         try{
           sg_rr.reset();
@@ -371,7 +381,7 @@ int main(/*int argc, char* argv[]*/) {
   int log = 0;
   
   string gps_file = format("{}_gps_{}", comp, log);
-  string front_file = format("{}_front_{}", comp, log);
+  //string front_file = format("{}_front_{}", comp, log);
   string center_file = format("{}_center_{}", comp, log);
   string imu_file = format("{}_imu_{}", comp, log);
   string strain_file= format("{}_strain_{}", comp, log);
@@ -388,7 +398,7 @@ int main(/*int argc, char* argv[]*/) {
   
   // Start up all the threads
   thread gps(gps_worker, gps_file , begin);
-  thread front(front_worker, front_file, begin);
+  //thread front(front_worker, front_file, begin);
   thread center(center_worker, center_file, begin);
   thread imu(imu_worker, imu_file, begin);
   thread strain(strain_worker, strain_file, begin);
@@ -403,7 +413,7 @@ int main(/*int argc, char* argv[]*/) {
   
   // Indefinite blocking. Workers will be runing in infinite loops
   gps.join();
-  front.join();
+  //front.join();
   center.join();
   imu.join();
   strain.join();
