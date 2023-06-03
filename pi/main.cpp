@@ -317,19 +317,64 @@ void gps_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
 
 }
 
+void strain_worker(string file_prefix, std::chrono::high_resolution_clock::time_point begin){
+  cout << "Strain worker has started." << endl;
+  
+  int fd5 = open("/dev/i2c-5", O_RDWR);
+  if (fd5 < 0) {
+    cerr << "Failed to open i2c bus 5" << endl;
+    return;
+  }
+
+  Realtime::setup();
+
+
+  ADC sg_rr = ADC(fd5, 3, false);
+
+  int iter = 0;
+
+  while(1) {
+    ofstream temp;
+    fn_open(temp, file_prefix, iter);
+
+    auto iter_start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < ADC_LOG_LENGTH; i++) {      
+      auto log = std::chrono::high_resolution_clock::now();
+      std::chrono::duration<double> diff = log - begin;
+      try {
+        temp << diff.count() << "," ;
+        temp << outvec(sg_rr.read()) << "\n";
+      } catch (exception &e) {
+        try{
+          sg_rr.reset();
+        } catch (exception &e) {
+
+        }
+        temp << diff.count() << ",x" << endl;
+      }
+      std::this_thread::sleep_until(iter_start + i * std::chrono::duration<double, std::milli>((1000.0/ADC_RATE)));
+
+    }
+    temp.close();
+    iter++;
+  }
+  close(fd5);
+
+}
 
 
 int main(/*int argc, char* argv[]*/) {
 
   std::ios_base::sync_with_stdio(false);
 
-  string comp = "OSH";
-  int log = 4;
+  string comp = "ORE";
+  int log = 0;
   
   string gps_file = format("{}_gps_{}", comp, log);
   string front_file = format("{}_front_{}", comp, log);
   string center_file = format("{}_center_{}", comp, log);
   string imu_file = format("{}_imu_{}", comp, log);
+  string strain_file= format("{}_strain_{}", comp, log);
 
   ofstream settings_log;
   settings_log.open(format("{}_parameters_{}",comp, log));
@@ -346,6 +391,7 @@ int main(/*int argc, char* argv[]*/) {
   thread front(front_worker, front_file, begin);
   thread center(center_worker, center_file, begin);
   thread imu(imu_worker, imu_file, begin);
+  thread strain(strain_worker, strain_file, begin);
 
   // int fd4 = open("/dev/i2c-4", O_RDWR);
   // if (fd4 < 0) {
@@ -360,5 +406,6 @@ int main(/*int argc, char* argv[]*/) {
   front.join();
   center.join();
   imu.join();
+  strain.join();
   return 0;
 }

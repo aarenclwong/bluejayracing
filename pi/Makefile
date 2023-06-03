@@ -77,4 +77,4 @@ realtime.o: concurrency/realtime.cpp concurrency/realtime.hpp
 	$(CXX) -c concurrency/realtime.cpp $(CFLAGS)
 
 clean:
-	rm -rf *.o *.gch *out *~ accel_test gyro_test main adc_test spi_test gps_test imu_test multiple_adc_test linpot_test vr_test lcd_test tourque_test
+	rm -rf *.o *.gch *out *~ accel_test gyro_test main adc_test spi_test gps_test imu_test multiple_adc_test linpot_test vr_test lcd_test torque_test

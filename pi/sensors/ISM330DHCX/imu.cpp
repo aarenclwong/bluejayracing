@@ -22,8 +22,8 @@ Imu::~Imu() {
 }
 
 void Imu::reset() {
-  spi_write(sd, 0x10, std::stoi("10010100", nullptr, 2));
-  spi_write(sd, 0x11, std::stoi("10010010", nullptr, 2));
+  spi_write(sd, 0x10, std::stoi("10100100", nullptr, 2));
+  spi_write(sd, 0x11, std::stoi("10100000", nullptr, 2));
   return;
 }
 

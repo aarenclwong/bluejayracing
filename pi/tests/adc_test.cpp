@@ -20,9 +20,9 @@ char BUS_NAME = '2';
 
 int main(/*int argc, char* argv[]*/) {
 
-  // std::ofstream temp;
-  //temp.open("temp.txt");
-  //temp << std::fixed << std::showpoint << std::setprecision(6);
+  std::ofstream temp;
+  temp.open("torque_test.txt");
+  temp << std::fixed << std::showpoint << std::setprecision(6);
 
   
   int fd = open("/dev/i2c-6", O_RDWR);
@@ -33,12 +33,14 @@ int main(/*int argc, char* argv[]*/) {
 
   // ADC a = ADC(fd, 2, true);
   // ADC a = ADC(fd, 0, false);
-  ADC a = ADC(fd, 1, false);
-  for (int i = 0; i < 100000; i++) {
+  ADC a = ADC(fd, 3, false);
+  for (int i = 0; i < 100000000; i++) {
     vector<double> data = a.read();
     // temp << data[0] << endl;
-    cout << data[0] << endl;
-    usleep(1);
+    temp << data[0] << endl;
+    //cout << data[0] << endl;
+    usleep(1000.0*(1.0/860.0));
+    //usleep(200000);
   }
   
   // temp.close();

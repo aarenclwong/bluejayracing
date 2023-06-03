@@ -9,4 +9,4 @@ imu_test
 multiple_adc_test
 lcd_test
 linpot_test
-
+torque_test
