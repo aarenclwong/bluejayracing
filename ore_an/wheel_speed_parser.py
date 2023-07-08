@@ -46,7 +46,7 @@ for i in range(0,45,1):
 
 
 cds_f = []
-window_size = 512
+window_size = 64
 SAMPLING_RATE_HZ = 860
 
 
@@ -61,7 +61,7 @@ for i in range(len(cds_s)-window_size):
   else:
     cds_f.append(0)
 
-mph =  np.array(cds_f) * 60 * 0.0397170837 * (SAMPLING_RATE_HZ) / (8*window_size * 24)
+mph =  np.array(cds_f) * 60 * 0.0397170837 * (SAMPLING_RATE_HZ) / (4096 * 24)
 
 f = open("wheel_freq.txt", "w")
 for i in range(0, len(cds_f), 1):

@@ -42,9 +42,12 @@ for i in range(40):
       tau.append(float(values[1])*7.05-246)
 
 
+start = 3150000
 dead = 5700000
-tau = tau[:dead]
-time = time[:dead]
+istart = 1095000+start
+iend = 1790000+start
+tau = tau[start:istart] + tau[iend:dead]
+time = time[start:istart] + time[iend:dead]
 
 # f = open("gps_vis.txt", "w")
 # for i in range(len(gps_lat)):
@@ -67,7 +70,7 @@ axs.set_ylabel("Torque(in-lbs)")
 axs.set_xlabel("Time since logging(s)")
 
 
-axs.scatter(np.arange(len(tau)), tau, s=1)
+axs.scatter(time, tau, s=1)
 
 plt.show()
 

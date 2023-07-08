@@ -43,10 +43,14 @@ for i in range(40):
       time.append(float(values[0])+break_time)
       tau.append(float(values[1])*7.05-246)
 
-start = 3000000
+start = 3150000
 dead = 5700000
-tau = tau[start:dead]
-time = time[start:dead]
+istart = 1095000+start
+iend = 1790000+start
+tau = tau[start:istart] + tau[iend:dead]
+time = time[start:istart] + time[iend:dead]
+
+
 
 
 
@@ -86,17 +90,31 @@ for t in range(1,len(time)):
 print(len(rpm))
 print(len(torque))
 
-
+horizontal = 10
+vertical = 8
 fig, axs = plt.subplots(1)
 axs.set_title("Oregon Endurance Torque Speed Bins")
 axs.set_ylabel("Torque(in-lbs)")
 axs.set_xlabel("CDS Speed(rpm)")
 
 #axs.scatter(rpm,torque, s=1)
-p = axs.hist2d(rpm, torque, (200,100), cmap=plt.cm.jet, norm=LogNorm())
+p = axs.hist2d(rpm, torque, (horizontal,vertical), cmap=plt.cm.jet, norm=LogNorm())
 cb = fig.colorbar(p[3], ax=axs)
 cb.set_label("occurances")
 
+print(len(p[1]))
+print(len(p[0]))
+print(len(p[0][0]))
+
+f = open("ts_bins.txt", "w")
+
+for h in range(horizontal):
+  for v in range(vertical):
+    s = str(p[1][h+1]) + "," + str(p[2][v+1]) + "," + str(p[0][h][v]) + "\n"
+    f.writelines([s])
+
+f.close()
+     
 #plt.colorbar()
 plt.show()
 
