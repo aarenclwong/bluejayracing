@@ -102,15 +102,15 @@ p = axs.hist2d(rpm, torque, (horizontal,vertical), cmap=plt.cm.jet, norm=LogNorm
 cb = fig.colorbar(p[3], ax=axs)
 cb.set_label("occurances")
 
-print(len(p[1]))
-print(len(p[0]))
+print(len(p[1]))//11
+print(len(p[0]))//9
 print(len(p[0][0]))
 
 f = open("ts_bins.txt", "w")
 
 for h in range(horizontal):
   for v in range(vertical):
-    s = str(p[1][h+1]) + "," + str(p[2][v+1]) + "," + str(p[0][h][v]) + "\n"
+    s = str(p[1][(h+h+1)/2]) + "," + str(p[2][(v+v+1)/2]) + "," + str(p[0][h][v]) + "\n"
     f.writelines([s])
 
 f.close()
