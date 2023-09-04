@@ -39,7 +39,7 @@ int main(/*int argc, char* argv[]*/) {
   //ADC a = ADC(fd, 1, false);
 
   //torque
-  ADC a = ADC(fd, 3, false);
+  ADC a = ADC(fd, 0, false);
   
   for (int i = 0; i < 100000000; i++) {
     std::ofstream temp;

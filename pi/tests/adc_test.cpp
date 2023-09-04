@@ -33,17 +33,16 @@ int main(/*int argc, char* argv[]*/) {
 
   //ADC a = ADC(fd, 2, true);
   // ADC a = ADC(fd, 0, false);
+  ADC a = ADC(fd, 0, false);
+<<<<<<< Updated upstream
 
-  //ADC a = ADC(fd, 1, false);
-
-  //torque
-  ADC a = ADC(fd, 3, false);
-  
+=======
+>>>>>>> Stashed changes
   for (int i = 0; i < 100000000; i++) {
     vector<double> data = a.read();
     // temp << data[0] << endl;
     temp << data[0] << endl;
-    //cout << data[0] << endl;
+    cout << data[0] << endl;
     usleep(1000.0*(1.0/860.0));
     //usleep(200000);
   }
