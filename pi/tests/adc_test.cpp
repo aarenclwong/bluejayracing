@@ -34,10 +34,7 @@ int main(/*int argc, char* argv[]*/) {
   //ADC a = ADC(fd, 2, true);
   // ADC a = ADC(fd, 0, false);
   ADC a = ADC(fd, 0, false);
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
   for (int i = 0; i < 100000000; i++) {
     vector<double> data = a.read();
     // temp << data[0] << endl;
