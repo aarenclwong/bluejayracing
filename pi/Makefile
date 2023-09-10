@@ -39,6 +39,15 @@ linpot_test: tests/linpot_test.cpp adc.o i2c_dev.o adafruit_ads.o
 lcd_test: tests/lcd_test.cpp lcd.o i2c_dev.o
 	$(CXX) -o lcd_test tests/lcd_test.cpp lcd.o i2c_dev.o $(CFLAGS)
 
+kevin_lcd_test: tests/kevin_lcd_test.cpp lcd.o i2c_dev.o
+	$(CXX) -o kevin_lcd_test tests/kevin_lcd_test.cpp lcd.o i2c_dev.o $(CFLAGS)
+
+dro_test: tests/dro_test.cpp adc.o i2c_dev.o adafruit_ads.o lcd.o
+	$(CXX) -o dro_test tests/dro_test.cpp adc.o lcd.o i2c_dev.o adafruit_ads.o
+
+dro_test2: tests/dro_test2.cpp adc.o i2c_dev.o adafruit_ads.o lcd.o
+	$(CXX) -o dro_test2 tests/dro_test2.cpp adc.o lcd.o i2c_dev.o adafruit_ads.o
+
 torque_test: tests/torque_test.cpp adc.o i2c_dev.o adafruit_ads.o
 	$(CXX) -o torque_test tests/torque_test.cpp adc.o i2c_dev.o adafruit_ads.o $(CFLAGS)
 

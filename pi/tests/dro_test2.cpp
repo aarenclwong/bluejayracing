@@ -1,4 +1,5 @@
 #include "../ui/lcd2004/lcd.hpp"
+#include "../sensors/ADS1115/adc.hpp"
 #include <iostream>
 #include <vector>
 
@@ -20,7 +21,10 @@ string outvec(vector<double> v) {
 }
 
 int main(/*int argc, char* argv[]*/) {
-
+  int fd_adc = open("/dev/i2c-6", O_RDWR);
+  if (fd_adc < 0) cerr << "failed to open file for adc" << endl;
+  ADC a = ADC(fd_adc, 3, true);
+  
   int fd = open("/dev/i2c-4", O_RDWR);
   if (fd < 0) {
     cerr <<"Failed to open i2c bus (%c) ";
@@ -28,15 +32,17 @@ int main(/*int argc, char* argv[]*/) {
   
   LCD l = LCD(fd);
 
-  
-  string s1 = "Hyun";
-  string s2 = "second string";
-  
-  // row, column
-  l.write(0, 0, vector<char>(s1.begin(), s1.end()));
-	l.write(1, 0, vector<char>(s2.begin(), s2.end()));
+  for(int i=0;i<10000000;i++){
 
+    string s = to_string(a.read()[0]/17500*10);
+    // print
+    s+="inches";
+    cout << s << endl;
+    l.write(0,0,vector<char>(s.begin(),s.end()));
+    usleep(1000.0*(1.0/860.0));
 
+  }
+  close(fd_adc);
   close(fd);
   return 0;
 }
