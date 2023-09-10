@@ -339,9 +339,10 @@ void strain_worker(string file_prefix, std::chrono::high_resolution_clock::time_
   Realtime::setup();
 
 
-  ADC sg_rr = ADC(fd5, 3, false);
+  ADC sg_rr = ADC(fd5, 0, false);
 
   int iter = 0;
+  int zero_count = 0;
 
   while(1) {
     ofstream temp;
@@ -353,7 +354,19 @@ void strain_worker(string file_prefix, std::chrono::high_resolution_clock::time_
       std::chrono::duration<double> diff = log - begin;
       try {
         temp << diff.count() << "," ;
-        temp << outvecI(sg_rr.read()) << "\n";
+        vector<double> reading = sg_rr.read();
+
+        temp << outvecI(reading) << "\n";
+        if (reading[0] == 0) {
+          zero_count++;
+        } else {
+          zero_count = 0;
+        }
+
+        if (zero_count > 860) {
+          sg_rr.reset();
+          zero_count = 0;
+        }
       } catch (exception &e) {
         try{
           sg_rr.reset();
@@ -377,7 +390,7 @@ int main(/*int argc, char* argv[]*/) {
 
   std::ios_base::sync_with_stdio(false);
 
-  string comp = "ORE";
+  string comp = "OHI";
   int log = 0;
   
   string gps_file = format("{}_gps_{}", comp, log);

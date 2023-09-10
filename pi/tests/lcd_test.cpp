@@ -28,6 +28,7 @@ int main(/*int argc, char* argv[]*/) {
   
   LCD l = LCD(fd);
 
+
   
   string s1 = "Hyun";
   string s2 = "second string";

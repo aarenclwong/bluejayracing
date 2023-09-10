@@ -16,19 +16,13 @@ using std::remove;
 using std::rename;
 using std::string;
 
+
 char BUS_NAME = '2';
 
 int main(/*int argc, char* argv[]*/) {
 
   int fd = open("/dev/i2c-6", O_RDWR);
   int fd_lcd = open("/dev/i2c-4", O_RDWR);
-  if (fd < 0) {
-    char err[200];
-    sprintf(err, "Failed to open i2c bus (%c) ", BUS_NAME);
-  }
-
-
-  ADC a = ADC(fd, 3, true);
   
   LCD l = LCD(fd_lcd);
 
