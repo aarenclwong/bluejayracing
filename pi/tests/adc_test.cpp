@@ -32,7 +32,7 @@ int main(/*int argc, char* argv[]*/) {
     sprintf(err, "Failed to open i2c bus (%c) ", BUS_NAME);
   }
 
-  ADC a = ADC(fd, 2, true);
+  ADC a = ADC(fd, 0, false);
   // ADC a = ADC(fd, 0, false);
   //ADC a = ADC(fd, 3, true);
 
