@@ -34,7 +34,7 @@ plt.show()
 trig = []
 
 while True:
-    os.system('scp pi@baja.local:bluejayracing/pi/cal_pkg.txt ./')
+    os.system('scp pi@baja2.local:bluejayracing/pi/cal_pkg.txt ./')
     
 
     f = open("C:/Users/aaren/Desktop/bluejayracing/cal_pkg.txt", "r")
@@ -54,7 +54,8 @@ while True:
     norm_data = []
     data_sum = sum(data)
     for datum in data:
-        norm_data.append(datum-(data_sum/len(data)))
+        #norm_data.append(datum-(data_sum/len(data)))
+        norm_data.append(datum)
     # sp = np.fft.fft(np.blackman(len(data))*norm_data)#windowing function
     # freq = np.fft.fftfreq(download_range.shape[-1])
     # freq = freq * 400
@@ -70,11 +71,14 @@ while True:
 
     axs[0].clear()
     axs[0].set_ylim(min(norm_data)-data_range,max(norm_data)+data_range)
-    axs[0].scatter(download_range, norm_data, s=2) 
+    print(len(download_range))
+    print(np.mean(norm_data))
+    #axs[0].scatter(download_range, norm_data, s=2) 
+    axs[0].scatter(np.arange(0,len(norm_data)), norm_data, s=2) 
     axs[1].clear()
     #axs[1].plot(freq, abs_spec)
     #axs[1].set_xlim(-1, 200)
-    # axs[2].clear()
+    # axs[2].clear()    
     # axs[2].plot(trig)
 
     
