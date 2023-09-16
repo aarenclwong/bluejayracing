@@ -5,3 +5,4 @@ spi_test
 *.o
 *.vscode*
 .DS_Store
+rt_accel_pkg.txt
