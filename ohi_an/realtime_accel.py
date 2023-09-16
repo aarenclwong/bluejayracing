@@ -20,7 +20,7 @@ plt.show()
 while True:
   os.system('scp pi@baja2.local:bluejayracing/pi/rt_accel_pkg.txt ./')
   
-  f = open("C:/Users/aaren/Desktop/bluejayracing/rt_accel_pkg.txt", "r")
+  f = open("/Users/ashleyzhang/Desktop/baja/bluejayracing/ohi_an/rt_accel_pkg.txt", "r")
   f_lines = f.readlines()
   f.close()
   x_accel = []
@@ -31,7 +31,7 @@ while True:
     x_accel.append(float(data[0]))
     y_accel.append(float(data[1]))
     z_accel.append(float(data[2]))
-  t = np.arange(0,1000)
+  t = np.arange(0,len(x_accel))
   axs[0].clear()
   axs[1].clear()
   axs[2].clear()
