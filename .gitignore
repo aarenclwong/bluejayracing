@@ -4,3 +4,4 @@ spi_test
 *.out
 *.o
 *.vscode*
+.DS_Store
