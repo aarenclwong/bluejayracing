@@ -5,9 +5,6 @@ import os
 import time
 
 
-
-
-
 fig, axs = plt.subplots(3)
 fig.suptitle('rt accel')
 
