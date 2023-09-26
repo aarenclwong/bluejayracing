@@ -51,8 +51,11 @@ dro_test2: tests/dro_test2.cpp adc.o i2c_dev.o adafruit_ads.o lcd.o
 torque_test: tests/torque_test.cpp adc.o i2c_dev.o adafruit_ads.o
 	$(CXX) -o torque_test tests/torque_test.cpp adc.o i2c_dev.o adafruit_ads.o $(CFLAGS)
 
-dro_test: tests/dro_test.cpp lcd.o i2c_dev.o adc.o adafruit_ads.o
-	$(CXX) -o dro_test tests/dro_test.cpp adc.o i2c_dev.o adafruit_ads.o lcd.o $(CFLAGS)
+realtime_accel: tests/realtime_accel.cpp i2c_dev.o accelerometer.o
+	$(CXX) -o realtime_accel tests/realtime_accel.cpp i2c_dev.o accelerometer.o $(CFLAGS)
+
+realtime_imu: tests/realtime_imu.cpp imu.o spi_pigpio.o
+	$(CXX) -o realtime_imu tests/realtime_imu.cpp imu.o spi_pigpio.o $(CFLAGS)
 
 main: main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o 
 	$(CXX) -o main main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o $(CFLAGS)
