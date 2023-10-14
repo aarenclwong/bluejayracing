@@ -37,13 +37,13 @@ void digitalClockDisplay() {
   Serial.print(hour());
   printDigits(minute());
   printDigits(second());
-  Serial.print(" ");
-  Serial.print(day());
-  Serial.print(" ");
-  Serial.print(month());
-  Serial.print(" ");
-  Serial.print(year()); 
-  Serial.println(); 
+  Serial.println(" ");
+  //Serial.print(day());
+  //Serial.print(" ");
+  //Serial.print(month());
+  //Serial.print(" ");
+  //Serial.print(year()); 
+  //Serial.println(); 
 }
 
 time_t getTeensy3Time()
