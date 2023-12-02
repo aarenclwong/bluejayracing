@@ -41,6 +41,10 @@ void loop(void) {
 
   myFile = SD.open("test.txt", FILE_WRITE);
 
+  //analog inputs
+  int val1 = analogRead(A5); //pin 19
+  int val2 = analogRead(A4); //pin 18
+
   // Display the results (magnetic vector values are in micro-Tesla (uT))
   // Serial.print("X: ");
   // Serial.print(event.magnetic.x);
@@ -66,6 +70,12 @@ void loop(void) {
     myFile.print(event.magnetic.z);
     myFile.print("  ");
     myFile.println("uT");
+
+    //analog Data
+    myFile.print("Pin 19 analogRead(): ");
+    myFile.print(val1);
+    myFile.print(" Pin 18 analogRead(): ");
+    myFile.println(val2);
 
     // Read and display temperature
     float temp_c = mmc.readTemperature();
