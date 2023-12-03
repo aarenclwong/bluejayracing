@@ -2,8 +2,10 @@
 #include "sensors/ISM330DHCX/imu.hpp"
 #include "sensors/ADS1115/adc.hpp"
 #include "sensors/MTK3339/gps.hpp"
+#include <libcamera/libcamera.h>
 #include "ui/lcd2004/lcd.hpp"
 #include "concurrency/realtime.hpp"
+#include "camera/event_loop.h"
 #include <iostream>
 #include <cstdio>
 #include <fstream>
@@ -235,7 +237,6 @@ void imu_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
         temp << diff.count() << ",x,x,x,x,x,x,x" << endl;
       }
       std::this_thread::sleep_until(iter_start + i * std::chrono::duration<double, std::milli>((1000.0/IMU_RATE)));
-
     }
     temp.close();
     iter++;
@@ -393,9 +394,9 @@ int main(/*int argc, char* argv[]*/) {
   string comp = "OHI";
   int log = 0;
   
-  string gps_file = format("{}_gps_{}", comp, log);
-  string front_file = format("{}_front_{}", comp, log);
-  string center_file = format("{}_center_{}", comp, log);
+  // string gps_file = format("{}_gps_{}", comp, log);
+  // string front_file = format("{}_front_{}", comp, log);
+  // string center_file = format("{}_center_{}", comp, log);
   string imu_file = format("{}_imu_{}", comp, log);
   //string strain_file= format("{}_strain_{}", comp, log);
 
@@ -410,9 +411,10 @@ int main(/*int argc, char* argv[]*/) {
   settings_log.close();
   
   // Start up all the threads
-  thread gps(gps_worker, gps_file , begin);
-  thread front(front_worker, front_file, begin);
-  thread center(center_worker, center_file, begin);
+  // thread gps(gps_worker, gps_file , begin);
+  // thread front(front_worker, front_file, begin);
+  // thread center(center_worker, center_file, begin);
+  system("libcamera-hello")
   thread imu(imu_worker, imu_file, begin);
   //thread strain(strain_worker, strain_file, begin);
 
@@ -425,9 +427,9 @@ int main(/*int argc, char* argv[]*/) {
   // LCD lcd = LCD(fd4);
   
   // Indefinite blocking. Workers will be runing in infinite loops
-  gps.join();
-  front.join();
-  center.join();
+  // gps.join();
+  // front.join();
+  // center.join();
   imu.join();
   //strain.join();
   return 0;

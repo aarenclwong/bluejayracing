@@ -2,9 +2,9 @@ CC := g++
 CONSERVATIVE_FLAGS = -std=c++20 -Wall -Wextra -pedantic
 DEBUGGING_FLAGS = -g -Ofast -pg
 IGNORE_FLAGS = -Wno-psabi -Wvla
-LINKING_FLAGS = -lgps -lpigpiod_if2 -lrt -pthread -lm -lfmt
+LINKING_FLAGS = -lgps -lpigpiod_if2 -lrt -pthread -lm -lfmt -levent -L/usr/local/lib -lcamera-base -lcamera -levent_pthreads -ljpeg
 CFLAGS = $(CONSERVATIVE_FLAGS) $(DEBUGGING_FLAGS) $(IGNORE_FLAGS) $(LINKING_FLAGS)
-
+CFLAGS += -I/usr/local/include/libcamera
 
 all: main accel_test adc_test gps_test gyro_test gps_test spi_test imu_test multiple_adc_test linpot_test
 
@@ -57,9 +57,11 @@ realtime_accel: tests/realtime_accel.cpp i2c_dev.o accelerometer.o
 realtime_imu: tests/realtime_imu.cpp imu.o spi_pigpio.o
 	$(CXX) -o realtime_imu tests/realtime_imu.cpp imu.o spi_pigpio.o $(CFLAGS)
 
-main: main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o 
-	$(CXX) -o main main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o $(CFLAGS)
+main: main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o camera/event_loop.cpp
+	$(CXX) -o main main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o camera/event_loop.cpp $(CFLAGS)
 
+simple_cam: simple-cam.cpp camera/event_loop.cpp
+	$(CXX) -o simple_cam simple-cam.cpp camera/event_loop.cpp $(CFLAGS)
 
 accelerometer.o: sensors/ISM330DHCX/accelerometer.cpp sensors/ISM330DHCX/accelerometer.hpp sensors/ISM330DHCX/ISM330DHCX.hpp
 	$(CXX) -c sensors/ISM330DHCX/accelerometer.cpp $(CFLAGS)
@@ -92,4 +94,4 @@ realtime.o: concurrency/realtime.cpp concurrency/realtime.hpp
 	$(CXX) -c concurrency/realtime.cpp $(CFLAGS)
 
 clean:
-	rm -rf *.o *.gch *out *~ accel_test gyro_test main adc_test spi_test gps_test imu_test multiple_adc_test linpot_test vr_test lcd_test torque_test
+	rm -rf *.o *.gch *out *~ accel_test gyro_test main adc_test spi_test gps_test imu_test multiple_adc_test linpot_test vr_test lcd_test torque_test simple_cam
