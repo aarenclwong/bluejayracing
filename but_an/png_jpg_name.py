@@ -4,15 +4,14 @@ import subprocess
 import shutil
 
 
-mapping = open("data.csv")
+target  = "C:/Users/aaren/Desktop/data/out/set489/"
+
+mapping = open(target + "mav0/cam0/data.csv")
 mapping_lines = mapping.readlines()
 
 
 
-for line in mapping_lines:
+for line in mapping_lines[1:]:
   tk = line.strip('\n').split(',')
-
-  # os.system(f'copy E:/butler_vid/{tk[0]} E:/butler_vio/{tk[1]}.png')
-  shutil.copy(f'E:/butler_vid/{tk[1]}', f'E:/butler_vio/{tk[0]}.png')
-  # print(f'copy E:/butler_vid/{tk[1]} E:/butler_vio/{tk[0]}.png')
+  shutil.copy(target + f'mav0/cam0/data/{tk[1][1:]}', target+f"mav0/cam0/data/{tk[0]}.png")
 
