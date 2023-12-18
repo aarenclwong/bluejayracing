@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.lua": "lua",
         "*.rmd": "markdown",
         "*.inc": "cpp",
         "random": "cpp",
@@ -58,6 +59,12 @@
         "iomanip": "cpp",
         "sstream": "cpp",
         "stop_token": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "csignal": "cpp",
+        "condition_variable": "cpp",
+        "list": "cpp",
+        "mutex": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp"
     }
 }

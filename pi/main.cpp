@@ -2,10 +2,10 @@
 #include "sensors/ISM330DHCX/imu.hpp"
 #include "sensors/ADS1115/adc.hpp"
 #include "sensors/MTK3339/gps.hpp"
-#include <libcamera/libcamera.h>
+// #include <libcamera/libcamera.h>
 #include "ui/lcd2004/lcd.hpp"
 #include "concurrency/realtime.hpp"
-#include "camera/event_loop.h"
+// #include "camera/event_loop.h"
 #include <iostream>
 #include <cstdio>
 #include <fstream>
@@ -16,9 +16,11 @@
 #include <iomanip>
 #include <fmt/core.h>
 #include <fmt/ranges.h>
-
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <ctime>
 #include <time.h>
+#include <csignal>
 
 const double ADC_RATE = 860.0;
 const int ADC_LOG_LENGTH = ADC_RATE*60*5;
@@ -124,10 +126,70 @@ string hs_time(std::chrono::high_resolution_clock::time_point begin) {
 
 }
 
+int findProcessId(const std::string& processName) {
+    char buffer[128];
+    std::string result = "";
+    std::string command = "pgrep " + processName;
 
+    // Open pipe to file
+    FILE* pipe = popen(command.c_str(), "r");
+    if (!pipe) {
+        std::cerr << "Could not open pipe" << std::endl;
+        return -1;
+    }
 
+    // Read the output
+    while (fgets(buffer, sizeof buffer, pipe) != NULL) {
+        result += buffer;
+    }
 
+    // Close the pipe
+    pclose(pipe);
 
+    // Convert result to integer
+    int pid = -1;
+    try {
+        pid = std::stoi(result);
+    } catch (std::exception& e) {
+        std::cerr << "Error converting PID to integer: " << e.what() << std::endl;
+    }
+
+    return pid;
+}
+
+void run_camera_command(const string& command) {
+  // Setting the thread to the highest priority
+  // Note: This requires superuser privileges
+  #ifdef __unix__
+  pthread_t this_thread = pthread_self();
+  struct sched_param params;
+  params.sched_priority = sched_get_priority_max(SCHED_FIFO);
+  pthread_setschedparam(this_thread, SCHED_FIFO, &params);
+  #endif
+
+  // Run the command
+  system(command.c_str());
+}
+
+// chrono::milliseconds monitor_file_size(const string& filename) {
+//   struct stat stat_buf;
+//   int rc;
+//   auto start = chrono::high_resolution_clock::now();
+
+//   // Initially wait for the file to be created
+//   while ((rc = stat(filename.c_str(), &stat_buf)) != 0) {
+//     this_thread::sleep_for(chrono::milliseconds(10));
+//   }
+
+//   // Now wait for the file size to change from zero
+//   while (stat_buf.st_size == 0) {
+//     stat(filename.c_str(), &stat_buf);
+//     this_thread::sleep_for(chrono::milliseconds(10));
+//   }
+
+//   auto end = chrono::high_resolution_clock::now();
+//   return chrono::duration_cast<chrono::milliseconds>(end - start);
+// }
 
 void front_worker(string file_prefix, std::chrono::high_resolution_clock::time_point begin) {
   cout << "Front worker has started." << endl;
@@ -212,7 +274,7 @@ void imu_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
   }
 
   Realtime::setup();
-  Realtime::cpu2();
+  Realtime::cpu3();
 
   Imu I = Imu(spi_d(pi, spi_handle));
 
@@ -297,12 +359,11 @@ void gps_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
   GPS gps = GPS();
 
   int iter = 0;
-
   while(1) {
     ofstream temp;
     fn_open(temp, file_prefix, iter);
     temp << std::setprecision(9);
-
+    
     auto iter_start = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> iter_diff = std::chrono::duration<double, std::milli>(0);
     while(iter_diff.count() < 300) {
@@ -325,7 +386,6 @@ void gps_worker(string file_prefix, std::chrono::high_resolution_clock::time_poi
     temp.close();
     iter++;
   }
-
 }
 
 void strain_worker(string file_prefix, std::chrono::high_resolution_clock::time_point begin){
@@ -388,34 +448,61 @@ void strain_worker(string file_prefix, std::chrono::high_resolution_clock::time_
 
 
 int main(/*int argc, char* argv[]*/) {
-
   std::ios_base::sync_with_stdio(false);
-
   string comp = "OHI";
   int log = 0;
-  
-  // string gps_file = format("{}_gps_{}", comp, log);
-  // string front_file = format("{}_front_{}", comp, log);
-  // string center_file = format("{}_center_{}", comp, log);
-  string imu_file = format("{}_imu_{}", comp, log);
-  //string strain_file= format("{}_strain_{}", comp, log);
 
-  ofstream settings_log;
-  settings_log.open(format("{}_parameters_{}",comp, log));
+
+  
+  auto cur = std::chrono::high_resolution_clock::now();
+  auto directory = format("data/{}", std::chrono::duration_cast<std::chrono::milliseconds>(cur.time_since_epoch()).count());
+  mkdir(directory.c_str(), 0777);
+  //name the output with the current unix time in ms
+  auto libcamera_command = format("libcamera-vid --tuning-file /usr/share/libcamera/ipa/rpi/vc4/imx296_mono.json --initial pause -s --save-pts {}/timestamps.txt -o {}/{}.yuv --codec yuv420 -n -t 180000 --framerate 60 --width 1456 --height 1088", directory, directory, "video");
+  thread camera(run_camera_command, libcamera_command);
+  usleep(5000000);
+
 
   // Synchronized epoch
-  auto begin = std::chrono::high_resolution_clock::now();
 
-  settings_log << hs_time(begin) << endl;
+
+
+
+  ofstream settings_log;
+  settings_log.open(format("{}/{}_parameters_{}",directory, comp, log));
+  
+  string gps_file = format("{}/{}_gps_{}", directory , comp, log);
+  // string front_file = format("{}_front_{}", comp, log);
+  // string center_file = format("{}_center_{}", comp, log);
+  string imu_file = format("{}/{}_imu_{}", directory, comp, log);
+  //string strain_file= format("{}_strain_{}", comp, log);
+    // Create a new directory with name as the current unix time in milliseconds
+
+  
+
+  // Start camera recording
+  int pid = findProcessId("libcamera-vid");
+  //send SIGUSR1 to the process
+  kill(pid, SIGUSR1);
+
+  auto begin = std::chrono::high_resolution_clock::now();
+  auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(begin.time_since_epoch()).count();
+  settings_log << ms << endl;
+  settings_log << (hs_time(begin)) << endl;
   settings_log << format("Rates: ADC-{} IMU-{}", ADC_RATE, IMU_RATE) << endl;
   settings_log.close();
-  
   // Start up all the threads
-  // thread gps(gps_worker, gps_file , begin);
+  thread gps(gps_worker, gps_file , begin);
   // thread front(front_worker, front_file, begin);
   // thread center(center_worker, center_file, begin);
-  system("libcamera-hello")
   thread imu(imu_worker, imu_file, begin);
+  
+  
+
+  // chrono::milliseconds time_to_first_frame = monitor_file_size(output_file_path);
+
+  // cout << "Time to first frame: " << time_to_first_frame.count() << " ms" << endl;
+
   //thread strain(strain_worker, strain_file, begin);
 
   // int fd4 = open("/dev/i2c-4", O_RDWR);
@@ -427,10 +514,26 @@ int main(/*int argc, char* argv[]*/) {
   // LCD lcd = LCD(fd4);
   
   // Indefinite blocking. Workers will be runing in infinite loops
-  // gps.join();
+
+  //sleep for 3 min
+  //debug statement
+  // std::cout << "sleeping for 3 min" << std::endl;
+  // std::this_thread::sleep_for(std::chrono::milliseconds(180000));
+  // stop_program = true;
+  // std::cout << "completed" << std::endl;
+
+  if(gps.joinable()){
+    gps.join();
+  }
+  if(camera.joinable()){
+    camera.join();
+  }
+  if(imu.joinable()){
+    imu.join();
+  }
   // front.join();
   // center.join();
-  imu.join();
   //strain.join();
+
   return 0;
 }

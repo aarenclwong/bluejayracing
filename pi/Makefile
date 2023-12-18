@@ -2,7 +2,7 @@ CC := g++
 CONSERVATIVE_FLAGS = -std=c++20 -Wall -Wextra -pedantic
 DEBUGGING_FLAGS = -g -Ofast -pg
 IGNORE_FLAGS = -Wno-psabi -Wvla
-LINKING_FLAGS = -lgps -lpigpiod_if2 -lrt -pthread -lm -lfmt -levent -L/usr/local/lib -lcamera-base -lcamera -levent_pthreads -ljpeg
+LINKING_FLAGS = -lgps -lpigpiod_if2 -lrt -pthread -lm -lfmt
 CFLAGS = $(CONSERVATIVE_FLAGS) $(DEBUGGING_FLAGS) $(IGNORE_FLAGS) $(LINKING_FLAGS)
 CFLAGS += -I/usr/local/include/libcamera
 
@@ -57,8 +57,8 @@ realtime_accel: tests/realtime_accel.cpp i2c_dev.o accelerometer.o
 realtime_imu: tests/realtime_imu.cpp imu.o spi_pigpio.o
 	$(CXX) -o realtime_imu tests/realtime_imu.cpp imu.o spi_pigpio.o $(CFLAGS)
 
-main: main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o camera/event_loop.cpp
-	$(CXX) -o main main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o camera/event_loop.cpp $(CFLAGS)
+main: main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o
+	$(CXX) -o main main.cpp adc.o gps.o imu.o lcd.o i2c_dev.o adafruit_ads.o spi_pigpio.o realtime.o $(CFLAGS)
 
 simple_cam: simple-cam.cpp camera/event_loop.cpp
 	$(CXX) -o simple_cam simple-cam.cpp camera/event_loop.cpp $(CFLAGS)
